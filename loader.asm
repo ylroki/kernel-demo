@@ -2,6 +2,23 @@ org 0100h
 
 jmp LABEL_START
 %include "fat12.inc"
+%include "loader.inc"
+
+; Something related to protect mode
+%include "pm.inc"
+; GDT
+LABEL_GDT:	Descriptor 0, 0, 0
+LABEL_DESC_FLAT_C:	Descriptor 0, 0fffffh, DA_CR|DA_32|DA_LIMIT_4K; 0-4G
+LABEL_DESC_FLAT_RW:	Descriptor 0, 0fffffh, DA_DRW|DA_32|DA_LIMIT_4K; 0-4G
+LABEL_DESC_VIDEO:	Descriptor 0b8000h, 0ffffh, DA_DRW|DA_DPL3;
+
+GdtLen equ $ - LABEL_GDT
+GdtPtr dw GdtLen - 1; boundary
+	dd BaseOfLoader*10h + LABEL_GDT
+; Selector
+SelectorFlatC equ LABEL_DESC_FLAT_C - LABEL_GDT
+SelectorFlatRW equ LABEL_DESC_FLAT_RW - LABEL_GDT
+SelectorVideo equ LABEL_DESC_VIDEO - LABEL_GDT + SA_RPL3
 
 BaseOfStack equ 0100h
 
@@ -23,9 +40,6 @@ LABEL_START:
 	int 13h
 
 	; Find loader.bin
-BaseOfKernel equ 08000h
-OffsetOfKernel equ 0h
-
 LoopNum dw RootDirSectors
 SectorNo dw RootDirNo
 LABEL_LOOP_EACH_SECTOR:
@@ -114,8 +128,19 @@ LABEL_LOADED:
 	call KillMotor
 	mov dh, 1
 	call DisplayString
-	jmp $
-	; jmp BaseOfKernel:OffsetOfKernel
+
+	lgdt [GdtPtr]
+	cli
+
+	in al, 92h
+	or al, 00000010b
+	out 92h, al
+
+	mov eax, cr0
+	or eax, 1
+	mov cr0, eax
+
+	jmp dword SelectorFlatC:(BaseOfLoaderPhyAddr+LABEL_PM_START)
 
 ;---------------------------
 ; Function DispalyString
@@ -240,5 +265,29 @@ KillMotor:
 	ret
 
 
-times 510 - ($-$$) db 0
-dw 0xaa55
+[SECTION .s32]
+ALIGN 32
+[BITS 32]
+LABEL_PM_START:
+	mov	ax, SelectorVideo
+	mov	gs, ax
+
+	mov	ax, SelectorFlatRW
+	mov	ds, ax
+	mov	es, ax
+	mov	fs, ax
+	mov	ss, ax
+	mov	esp, TopOfStack
+
+	mov	ah, 0Fh				; 0000: 黑底    1111: 白字
+	mov	al, 'P'
+	mov	[gs:((80 * 0 + 39) * 2)], ax	; 屏幕第 0 行, 第 39 列。
+	jmp	$
+
+[SECTION .data1]
+ALIGN 32
+
+LABEL_DATA:
+
+StackSpace: times 1024 db 0
+TopOfStack equ BaseOfLoaderPhyAddr + $

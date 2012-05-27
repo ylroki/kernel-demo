@@ -2,6 +2,7 @@ org 07c00h
 	jmp short LABEL_START
 	nop
 %include "fat12.inc"
+%include "loader.inc"
 BaseOfStack equ 07c00h
 
 
@@ -22,9 +23,6 @@ LABEL_START:
 	int 13h
 
 	; Find loader.bin
-BaseOfSector equ 09000h
-OffsetOfSector equ 0100h
-
 LoopNum dw RootDirSectors
 SectorNo dw RootDirNo
 LABEL_LOOP_EACH_SECTOR:
@@ -32,9 +30,9 @@ LABEL_LOOP_EACH_SECTOR:
 	jz LABEL_NO_LOADER
 	dec word[LoopNum]
 
-	mov ax, BaseOfSector
+	mov ax, BaseOfLoader
 	mov es, ax
-	mov bx, OffsetOfSector
+	mov bx, OffsetOfLoader
 	mov cl, 1
 	mov ax, [SectorNo]
 	call ReadSector
@@ -42,7 +40,7 @@ LABEL_LOOP_EACH_SECTOR:
 	; Deal with a sector
 	FileName db 'LOADER  BIN'
 	mov si, FileName
-	mov di, OffsetOfSector
+	mov di, OffsetOfLoader
 	mov dx, 10h
 	; Deal with each item in root sector
 LABEL_DEAL_EACH_ITEM:
@@ -87,9 +85,9 @@ LABEL_FILENAME_FOUND:
 	mov cx, word[es:di]
 	push cx; 
 
-	mov ax, BaseOfSector
+	mov ax, BaseOfLoader
 	mov es, ax
-	mov bx, OffsetOfSector
+	mov bx, OffsetOfLoader
 
 	mov ax, DeltaSectorNo
 	add ax, RootDirSectors
@@ -110,7 +108,7 @@ LABEL_LOADING:
 	jmp LABEL_LOADING
 
 LABEL_LOADED:
-	jmp BaseOfSector:OffsetOfSector
+	jmp BaseOfLoader:OffsetOfLoader
 
 ;---------------------------
 ; Function DispalyString
@@ -187,7 +185,7 @@ GetFATEntry:
 	push bx
 	push ax
 
-	mov ax, BaseOfSector
+	mov ax, BaseOfLoader
 	sub ax, 0100h
 	mov es, ax
 	pop ax

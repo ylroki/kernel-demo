@@ -12,3 +12,6 @@ kernel:
 	sudo cp obj/kernel.bin /mnt/floppy -v
 	sudo umount /mnt/floppy
 
+test:	
+	nasm -f elf test.asm -o test.o
+	ld -s test.o -o test

@@ -310,7 +310,10 @@ LABEL_PM_START:
 	mov	ah, 0Fh				; 0000: 黑底    1111: 白字
 	mov	al, 'P'
 	mov	[gs:((80 * 0 + 39) * 2)], ax	; 屏幕第 0 行, 第 39 列。
-	jmp	$
+
+	call InitKernel
+	;jmp	$
+	jmp SelectorFlatC:KernelEntryPointPhyAddr ; Enter kernel
 
 %include "lib.inc"
 
@@ -411,6 +414,32 @@ SetupPaging:
 	nop
 
 	ret
+
+;------------------------
+; Function InitKernel
+InitKernel:
+        xor   esi, esi
+        mov   cx, word [BaseOfKernelFilePhyAddr+2Ch]; Number of program header
+        movzx ecx, cx                               ;/
+        mov   esi, [BaseOfKernelFilePhyAddr + 1Ch]  ; Offset of Program header in elf file
+        add   esi, BaseOfKernelFilePhyAddr; Address of program header in memory
+.Begin:
+        mov   eax, [esi + 0]
+        cmp   eax, 0                      ; type
+        jz    .NoAction
+        push  dword [esi + 010h]    ;size
+        mov   eax, [esi + 04h]            ; 
+        add   eax, BaseOfKernelFilePhyAddr; 
+        push  eax		    ;src  
+        push  dword [esi + 08h]     ;dst 
+        call  Memcpy                     
+        add   esp, 12                     
+.NoAction:
+        add   esi, 020h                   ; esi += size of program header
+        dec   ecx
+        jnz   .Begin
+
+        ret
 
 [SECTION .data1]
 ALIGN 32

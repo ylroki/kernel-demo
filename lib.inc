@@ -135,7 +135,7 @@ Memcpy:
 .begin:
 	cmp ecx, 0
 	jz .end
-	mov al, [ds:edi]
+	mov al, [ds:esi]
 	inc esi
 	mov byte[es:edi], al
 	inc edi

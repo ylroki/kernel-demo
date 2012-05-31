@@ -22,6 +22,8 @@ SelectorVideo equ LABEL_DESC_VIDEO - LABEL_GDT + SA_RPL3
 
 BaseOfStack equ 0100h
 
+PageDirBase	equ	100000h	;
+PageTblBase	equ	101000h	;
 
 LABEL_START:
 	mov ax, cs
@@ -303,6 +305,7 @@ LABEL_PM_START:
 	add	esp, 4
 
 	call DisplayMemInfo
+	call SetupPaging
 
 	mov	ah, 0Fh				; 0000: 黑底    1111: 白字
 	mov	al, 'P'
@@ -357,6 +360,57 @@ DisplayMemInfo:
 	pop	esi
 	ret
 
+;-------------------------
+; Function SetupPaging
+SetupPaging:
+	; 根据内存大小计算应初始化多少PDE以及多少页表
+	xor	edx, edx
+	mov	eax, [dwMemSize]
+	mov	ebx, 400000h	; 400000h = 4M = 4096 * 1024, 一个页表对应的内存大小
+	div	ebx
+	mov	ecx, eax	; 此时 ecx 为页表的个数，也即 PDE 应该的个数
+	test	edx, edx
+	jz	.no_remainder
+	inc	ecx		; 如果余数不为 0 就需增加一个页表
+.no_remainder:
+	push	ecx		; 暂存页表个数
+
+	; 为简化处理, 所有线性地址对应相等的物理地址. 并且不考虑内存空洞.
+
+	; 首先初始化页目录
+	mov	ax, SelectorFlatRW
+	mov	es, ax
+	mov	edi, PageDirBase	; 此段首地址为 PageDirBase
+	xor	eax, eax
+	mov	eax, PageTblBase | PG_P  | PG_USU | PG_RWW
+.1:
+	stosd
+	add	eax, 4096		; 为了简化, 所有页表在内存中是连续的.
+	loop	.1
+
+	; 再初始化所有页表
+	pop	eax			; 页表个数
+	mov	ebx, 1024		; 每个页表 1024 个 PTE
+	mul	ebx
+	mov	ecx, eax		; PTE个数 = 页表个数 * 1024
+	mov	edi, PageTblBase	; 此段首地址为 PageTblBase
+	xor	eax, eax
+	mov	eax, PG_P  | PG_USU | PG_RWW
+.2:
+	stosd
+	add	eax, 4096		; 每一页指向 4K 的空间
+	loop	.2
+
+	mov	eax, PageDirBase
+	mov	cr3, eax
+	mov	eax, cr0
+	or	eax, 80000000h
+	mov	cr0, eax
+	jmp	short .3
+.3:
+	nop
+
+	ret
 
 [SECTION .data1]
 ALIGN 32

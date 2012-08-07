@@ -43,7 +43,7 @@ LABEL_START:
 	mov	eax, 0E820h		; eax = 0000E820h
 	mov	ecx, 20			; ecx = 地址范围描述符结构的大小
 	mov	edx, 0534D4150h		; edx = 'SMAP'
-	int	15h			; int 15h
+	int	15h			; int 15h, this call returns a memory map of all installed RAM
 	jc	.MemChkFail
 	add	di, 20
 	inc	dword [_dwMCRNumber]	; dwMCRNumber = ARDS 的个数
@@ -60,7 +60,7 @@ LABEL_START:
 	xor dl, dl
 	int 13h
 
-	; Find loader.bin
+	; Find kernel.bin
 LoopNum dw RootDirSectors
 SectorNo dw RootDirNo
 LABEL_LOOP_EACH_SECTOR:
@@ -113,7 +113,7 @@ LABEL_NO_KERNEL:
 	call DisplayString
 	jmp $
 
-; Find loader.bin already
+; Find kernel.bin already
 LABEL_FILENAME_FOUND:
 	mov dh, 3
 	call DisplayString

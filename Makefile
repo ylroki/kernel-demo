@@ -15,3 +15,9 @@ kernel:
 test:	
 	nasm -f elf test.asm -o test.o
 	ld -s test.o -o test
+
+doc_env:
+	xsltproc \
+	--output docs/environment.html \
+	/usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl \
+	docs/environment.xml

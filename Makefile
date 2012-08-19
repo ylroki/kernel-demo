@@ -13,10 +13,17 @@ LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 OBJS = obj/kernel.o
 
 all: build/boot.bin build/loader.bin build/kernel.bin
+	dd if=build/boot.bin of=image/my_os.img bs=512 count=1 conv=notrunc
+	sudo mount image/my_os.img /mnt/floppy
+	sudo cp build/loader.bin build/kernel.bin /mnt/floppy
+	sudo umount /mnt/floppy
 
 clean:
-	rm obj/*
-	rm build/*
+	rm obj/*.o
+	rm build/*.bin
+	sudo mount image/my_os.img /mnt/floppy
+	sudo rm /mnt/floppy/*
+	sudo umount /mnt/floppy
 
 # build boot
 build/boot.bin: boot/boot.asm boot/include/*.inc

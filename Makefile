@@ -1,21 +1,38 @@
-boot:
-	nasm boot.asm -o obj/boot.bin
-	dd if=obj/boot.bin of=obj/a.img bs=512 count=1 conv=notrunc
-	nasm loader.asm -o obj/loader.bin
-	sudo mount -o loop obj/a.img /mnt/floppy
-	sudo cp obj/loader.bin /mnt/floppy
-	sudo umount /mnt/floppy
-kernel:
-	nasm -f elf -o obj/kernel.o kernel.asm
-	ld -s -Ttext 0x30400 -o obj/kernel.bin obj/kernel.o
-	sudo mount -o loop obj/a.img /mnt/floppy
-	sudo cp obj/kernel.bin /mnt/floppy -v
-	sudo umount /mnt/floppy
 
-test:	
-	nasm -f elf test.asm -o test.o
-	ld -s test.o -o test
+ASM = nasm
+ASM_BOOT_FLAG = -I boot/include/
+ASM_KERNEL_FLAG = -I include/ -f elf
 
+CC = gcc
+C_FLAG = -I include/ -c
+
+LD = ld
+KERNEL_ENTRY = 0x30400
+LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
+
+OBJS = obj/kernel.o
+
+all: build/boot.bin build/loader.bin build/kernel.bin
+
+clean:
+	rm obj/*
+	rm build/*
+
+# build boot
+build/boot.bin: boot/boot.asm boot/include/*.inc
+	${ASM} ${ASM_BOOT_FLAG} -o $@ $<
+
+build/loader.bin: boot/loader.asm boot/include/*.inc
+	${ASM} ${ASM_BOOT_FLAG} -o $@ $<
+
+# build kernel
+obj/kernel.o: kernel/kernel.asm
+	${ASM} ${ASM_KERNEL_FLAG} -o $@ $<
+
+build/kernel.bin: ${OBJS}
+	${LD} ${LD_FLAG} -o $@ ${OBJS}
+
+# document
 doc_env:
 	xsltproc \
 	--output docs/environment.html \

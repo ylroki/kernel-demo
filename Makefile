@@ -10,7 +10,7 @@ LD = ld
 KERNEL_ENTRY = 0x30400
 LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 
-OBJS = obj/kernel.o obj/string.o obj/start.o
+OBJS = obj/kernel.o obj/string.o obj/start.o obj/protect.o obj/init_8259A.o obj/kliba.o
 
 all: build/boot.bin build/loader.bin build/kernel.bin
 	dd if=build/boot.bin of=image/my_os.img bs=512 count=1 conv=notrunc
@@ -36,11 +36,20 @@ build/loader.bin: boot/loader.asm boot/include/*.inc
 obj/string.o: lib/string.asm
 	${ASM} ${ASM_KERNEL_FLAG} -o $@ $<
 
+obj/kliba.o: lib/kliba.asm
+	${ASM} ${ASM_KERNEL_FLAG} -o $@ $<
+
 # build kernel
 obj/kernel.o: kernel/kernel.asm
 	${ASM} ${ASM_KERNEL_FLAG} -o $@ $<
 
 obj/start.o: kernel/start.c
+	${CC} ${C_FLAG} -o $@ $<
+
+obj/protect.o: kernel/protect.c
+	${CC} ${C_FLAG} -o $@ $<
+
+obj/init_8259A.o: kernel/init_8259A.c
 	${CC} ${C_FLAG} -o $@ $<
 
 build/kernel.bin: ${OBJS}

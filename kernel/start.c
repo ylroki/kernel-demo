@@ -2,13 +2,15 @@
 
 extern void* memcpy(void* dst, void* src, int size);
 extern void disp_str(char* str);
-extern void init_prot();
+extern void init_protect_mode();
 
 uint8_t g_gdt_ptr[6];
 descriptor_t g_gdt[GDT_SIZE];
 
 uint8_t g_idt_ptr[6];
 gate_t g_idt[IDT_SIZE];
+
+uint8_t g_exited;
 
 void cstart()
 {
@@ -24,7 +26,9 @@ void cstart()
 	*p_idt_base = (uint32_t)g_idt;
 	*p_idt_limit = IDT_SIZE * sizeof(gate_t) - 1;
 
-	init_prot();
+	init_protect_mode();
+
+	g_exited = 0;
 	
 	disp_str("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nhello world\n");
 	return ;

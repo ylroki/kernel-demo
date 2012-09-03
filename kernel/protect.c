@@ -1,12 +1,12 @@
 #include "pub.h"
 
-extern init_8259A();
 extern int disp_pos;
 extern gate_t g_idt[IDT_SIZE];
+extern uint8_t g_exited;
 
 typedef void (*int_handler)();
 
-/* 中断处理函数 */
+/* exception function */
 void	divide_error();
 void	single_step_exception();
 void	nmi();
@@ -24,10 +24,36 @@ void	general_protection();
 void	page_fault();
 void	copr_error();
 
+void mask_int_func0();
+void mask_int_func1();
+void mask_int_func2();
+void mask_int_func3();
+void mask_int_func4();
+void mask_int_func5();
+void mask_int_func6();
+void mask_int_func7();
+void mask_int_func8();
+void mask_int_func9();
+void mask_int_func10();
+void mask_int_func11();
+void mask_int_func12();
+void mask_int_func13();
+void mask_int_func14();
+void mask_int_func15();
 
-void exception_handler(int vec_no, int err_code, int cs, int eflags)
+void clear_some_lines()
 {
+	disp_pos = 0;
+	int i;
+	for (i = 0; i < 80 * 5; ++i)
+	{
+		disp_str(" ");
+	}
+	disp_pos = 0;
+}
 
+void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
+{
 	char* err_msg[] =
 	{
 		"Divide Error",
@@ -52,18 +78,50 @@ void exception_handler(int vec_no, int err_code, int cs, int eflags)
 		"Floating Point Exception"
 	};
 
-	disp_pos = 0;
-	int i;
-	for (i = 0; i < 80 * 5; ++i)
-	{
-		disp_str(" ");
-	}
-	disp_pos = 0;
-
+	clear_some_lines();	
 	disp_str("Exception: ");
 	disp_str(err_msg[vec_no]);
+	disp_str("\n");
+	disp_str("CS: ");
+	disp_int(cs);
+	disp_str(" IP: ");
+	disp_int(eip);
+	disp_str(" Error code: ");
+	disp_int(err_code);
+	disp_str(" Flags: ");
+	disp_int(eflags);
+	disp_str("\n");
 
 	return;
+}
+
+void mask_interrupt_handler(int irq)
+{
+	char str[2] = {0};
+	str[0] = irq + 'A';
+
+	clear_some_lines();
+	disp_str(str);
+	if (1 == irq)
+	{
+		g_exited = 1;
+	}
+
+}
+
+void init_8259A()
+{
+	out_byte(INT_M_CTL, 0x11);
+	out_byte(INT_S_CTL, 0x11);
+	out_byte(INT_M_CTLMASK, INT_VECTOR_IRQ0);
+	out_byte(INT_S_CTLMASK, INT_VECTOR_IRQ8);
+	out_byte(INT_M_CTLMASK, 0x4);
+	out_byte(INT_S_CTLMASK, 0x2);
+	out_byte(INT_M_CTLMASK, 0x1);
+	out_byte(INT_S_CTLMASK, 0x1);
+	/* open clock and keyboard interrupt*/
+	out_byte(INT_M_CTLMASK, 0xFD);
+	out_byte(INT_S_CTLMASK, 0xFF);
 }
 
 void init_idt_desc(unsigned char vector, uint8_t desc_type,
@@ -78,11 +136,11 @@ void init_idt_desc(unsigned char vector, uint8_t desc_type,
 	p_gate->offset_high = (base>>16) & 0xFFFF;
 }
 
-void init_prot()
-{
-	init_8259A();
 
-	// 全部初始化成中断门(没有陷阱门)
+
+void init_exception()
+{
+	/* 异常中断*/
 	init_idt_desc(INT_VECTOR_DIVIDE,	DA_386IGate,
 		      divide_error,		PRIVILEGE_KRNL);
 
@@ -130,4 +188,68 @@ void init_prot()
 
 	init_idt_desc(INT_VECTOR_COPROC_ERR,	DA_386IGate,
 		      copr_error,		PRIVILEGE_KRNL);
+}
+
+void init_mask_interrupt()
+{
+	/* master*/
+	init_idt_desc(INT_VECTOR_IRQ0 + 0, DA_386IGate,
+			mask_int_func0, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ0 + 1, DA_386IGate,
+			mask_int_func1, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ0 + 2, DA_386IGate,
+			mask_int_func2, PRIVILEGE_KRNL);
+			
+	init_idt_desc(INT_VECTOR_IRQ0 + 3, DA_386IGate,
+			mask_int_func3, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ0 + 4, DA_386IGate,
+			mask_int_func4, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ0 + 5, DA_386IGate,
+			mask_int_func5, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ0 + 6, DA_386IGate,
+			mask_int_func6, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ0 + 7, DA_386IGate,
+			mask_int_func7, PRIVILEGE_KRNL);
+
+	/* slave*/
+	init_idt_desc(INT_VECTOR_IRQ8 + 0, DA_386IGate,
+			mask_int_func0, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ8 + 1, DA_386IGate,
+			mask_int_func1, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ8 + 2, DA_386IGate,
+			mask_int_func2, PRIVILEGE_KRNL);
+			
+	init_idt_desc(INT_VECTOR_IRQ8 + 3, DA_386IGate,
+			mask_int_func3, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ8 + 4, DA_386IGate,
+			mask_int_func4, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ8 + 5, DA_386IGate,
+			mask_int_func5, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ8 + 6, DA_386IGate,
+			mask_int_func6, PRIVILEGE_KRNL);
+
+	init_idt_desc(INT_VECTOR_IRQ8 + 7, DA_386IGate,
+			mask_int_func7, PRIVILEGE_KRNL);
+
+
+}
+
+void init_protect_mode()
+{
+	init_8259A();
+
+	init_exception();
+
+	init_mask_interrupt();
 }

@@ -4,13 +4,13 @@ ASM_BOOT_FLAG = -I boot/include/
 ASM_KERNEL_FLAG = -I include/ -f elf
 
 CC = gcc
-C_FLAG = -I include/ -c
+C_FLAG = -I include/ -c -fno-builtin -fno-stack-protector
 
 LD = ld
 KERNEL_ENTRY = 0x30400
 LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 
-OBJS = obj/kernel.o obj/string.o obj/start.o obj/protect.o obj/init_8259A.o obj/kliba.o
+OBJS = obj/kernel.o obj/string.o obj/start.o obj/protect.o obj/kliba.o obj/klib.o
 
 all: build/boot.bin build/loader.bin build/kernel.bin
 	dd if=build/boot.bin of=image/my_os.img bs=512 count=1 conv=notrunc
@@ -39,6 +39,9 @@ obj/string.o: lib/string.asm
 obj/kliba.o: lib/kliba.asm
 	${ASM} ${ASM_KERNEL_FLAG} -o $@ $<
 
+obj/klib.o: lib/klib.c
+	${CC} ${C_FLAG} -o $@ $<
+
 # build kernel
 obj/kernel.o: kernel/kernel.asm
 	${ASM} ${ASM_KERNEL_FLAG} -o $@ $<
@@ -49,8 +52,6 @@ obj/start.o: kernel/start.c
 obj/protect.o: kernel/protect.c
 	${CC} ${C_FLAG} -o $@ $<
 
-obj/init_8259A.o: kernel/init_8259A.c
-	${CC} ${C_FLAG} -o $@ $<
 
 build/kernel.bin: ${OBJS}
 	${LD} ${LD_FLAG} -o $@ ${OBJS}

@@ -67,7 +67,7 @@ csinit:
 	cmp al, 0
 	je csinit
 
-	jmp $
+	#jmp $
 
 
 %macro  mask_int_func_master    1

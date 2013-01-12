@@ -98,6 +98,7 @@ void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
 void mask_interrupt_handler(int irq)
 {
 	char str[2] = {0};
+	char quit_str[] = "OS QUIT";
 	str[0] = irq + 'A';
 
 	clear_some_lines();
@@ -105,6 +106,7 @@ void mask_interrupt_handler(int irq)
 	if (1 == irq)
 	{
 		g_exited = 1;
+		disp_str(quit_str);
 	}
 
 }

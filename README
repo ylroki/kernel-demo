@@ -1,0 +1,7 @@
+1 compile:
+	To clean all objects, type command 'make clean';
+	To make all objects, type command 'make all'
+
+2 Run bochs:
+	Just type 'bochs', OS's kernel placed at address 0x30400,
+	you can make breakpoint at that address.

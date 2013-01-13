@@ -10,7 +10,8 @@ LD = ld
 KERNEL_ENTRY = 0x30400
 LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 
-OBJS = obj/kernel.o obj/string.o obj/start.o obj/protect.o obj/kliba.o obj/klib.o
+OBJS = obj/kernel.o obj/string.o obj/start.o obj/protect.o obj/kliba.o obj/klib.o\
+	obj/global.o obj/main.o
 
 all: build/boot.bin build/loader.bin build/kernel.bin
 	dd if=build/boot.bin of=image/my_os.img bs=512 count=1 conv=notrunc
@@ -52,6 +53,11 @@ obj/start.o: kernel/start.c
 obj/protect.o: kernel/protect.c
 	${CC} ${C_FLAG} -o $@ $<
 
+obj/global.o: kernel/global.c
+	${CC} ${C_FLAG} -o $@ $<
+
+obj/main.o: kernel/main.c
+	${CC} ${C_FLAG} -o $@ $<
 
 build/kernel.bin: ${OBJS}
 	${LD} ${LD_FLAG} -o $@ ${OBJS}

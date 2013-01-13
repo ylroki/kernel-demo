@@ -1,16 +1,8 @@
 #include "pub.h"
+#include "string.h"
+#include "global.h"
 
-extern void* memcpy(void* dst, void* src, int size);
-extern void disp_str(char* str);
 extern void init_protect_mode();
-
-uint8_t g_gdt_ptr[6];
-descriptor_t g_gdt[GDT_SIZE];
-
-uint8_t g_idt_ptr[6];
-gate_t g_idt[IDT_SIZE];
-
-uint8_t g_exited;
 
 void cstart()
 {

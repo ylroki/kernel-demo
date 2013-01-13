@@ -1,8 +1,7 @@
 #include "pub.h"
+#include "string.h"
+#include "global.h"
 
-extern int disp_pos;
-extern gate_t g_idt[IDT_SIZE];
-extern uint8_t g_exited;
 
 typedef void (*int_handler)();
 
@@ -102,7 +101,9 @@ void mask_interrupt_handler(int irq)
 	str[0] = irq + 'A';
 
 	clear_some_lines();
-	disp_str(str);
+	disp_str("IRQ: ");
+	disp_int(irq);
+	disp_str("\n");
 	if (1 == irq)
 	{
 		g_exited = 1;
@@ -122,7 +123,7 @@ void init_8259A()
 	out_byte(INT_M_CTLMASK, 0x1);
 	out_byte(INT_S_CTLMASK, 0x1);
 	/* open clock and keyboard interrupt*/
-	out_byte(INT_M_CTLMASK, 0xFD);
+	out_byte(INT_M_CTLMASK, 0xFE);
 	out_byte(INT_S_CTLMASK, 0xFF);
 }
 
@@ -247,6 +248,22 @@ void init_mask_interrupt()
 
 }
 
+uint32_t seg2phys(uint16_t seg)
+{
+	descriptor_t* p_dest = &g_gdt[seg >> 3];
+	return (p_dest->base_high<<24 | p_dest->base_mid<<16 | p_dest->base_low);
+}
+
+void init_descriptor(descriptor_t *p_desc,uint32_t base,uint32_t limit,uint16_t attribute)
+{
+	p_desc->limit_low	= limit & 0x0FFFF;
+	p_desc->base_low	= base & 0x0FFFF;
+	p_desc->base_mid	= (base >> 16) & 0x0FF;
+	p_desc->attr1		= attribute & 0xFF;
+	p_desc->limit_high_attr2= ((limit>>16) & 0x0F) | (attribute>>8) & 0xF0;
+	p_desc->base_high	= (base >> 24) & 0x0FF;
+}
+
 void init_protect_mode()
 {
 	init_8259A();
@@ -254,4 +271,20 @@ void init_protect_mode()
 	init_exception();
 
 	init_mask_interrupt();
+
+	memset(&g_tss, 0, sizeof(g_tss));
+	g_tss.ss0 = SELECTOR_KERNEL_DS;
+	init_descriptor(&g_gdt[INDEX_TSS],
+			vir2phys(seg2phys(SELECTOR_KERNEL_DS), &g_tss),
+			sizeof(g_tss) - 1,
+			DA_386TSS);
+	g_tss.iobase = sizeof(g_tss); /* 没有I/O许可位图 */
+
+	/* 填充 GDT 中进程的 LDT 的描述符 */
+	init_descriptor(&g_gdt[INDEX_LDT_FIRST],
+		vir2phys(seg2phys(SELECTOR_KERNEL_DS), g_proc_table[0].ldts),
+		LDT_SIZE * sizeof(descriptor_t) - 1,
+		DA_LDT);
 }
+
+

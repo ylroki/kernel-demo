@@ -9,6 +9,11 @@
 #define	PRIVILEGE_TASK	1
 #define	PRIVILEGE_USER	3
 
+/* RPL */
+#define	RPL_KRNL	SA_RPL0
+#define	RPL_TASK	SA_RPL1
+#define	RPL_USER	SA_RPL3
+
 #define INT_M_CTL 0x20
 #define INT_M_CTLMASK 0x21
 #define INT_S_CTL 0xA0
@@ -24,15 +29,33 @@
 #define	INDEX_FLAT_C		1	// ┣ LOADER 里面已经确定了的.
 #define	INDEX_FLAT_RW		2	// ┃
 #define	INDEX_VIDEO		3	// ┛
+#define INDEX_TSS		4
+#define INDEX_LDT_FIRST 5
+
 /* 选择子 */
 #define	SELECTOR_DUMMY		   0		// ┓
 #define	SELECTOR_FLAT_C		0x08		// ┣ LOADER 里面已经确定了的.
 #define	SELECTOR_FLAT_RW	0x10		// ┃
 #define	SELECTOR_VIDEO		(0x18+3)	// ┛<-- RPL=3
+#define SELECTOR_TSS		0x20
+#define SELECTOR_LDT_FIRST		0x28
+
 
 #define	SELECTOR_KERNEL_CS	SELECTOR_FLAT_C
 #define	SELECTOR_KERNEL_DS	SELECTOR_FLAT_RW
+#define SELECTOR_KERNEL_GS  SELECTOR_VIDEO
 
+#define LDT_SIZE 2
+
+#define SA_RPL_MASK  0xfffc
+#define SA_RPL0 0
+#define SA_RPL1 1
+#define SA_RPL2 2
+#define SA_RPL3 3
+
+#define SA_TI_MASK  0xfffb
+#define SA_TIG 0
+#define SA_TIL 4
 
 /* 描述符类型值说明 */
 #define	DA_32			0x4000	/* 32 位段				*/
@@ -104,6 +127,39 @@ typedef struct gate_s
 	uint8_t attr;
 	uint16_t offset_high;
 }gate_t;
+
+typedef struct tss_s{
+	uint32_t	backlink;
+	uint32_t	esp0;	/* stack pointer to use during interrupt */
+	uint32_t	ss0;	/*   "   segment  "  "    "        "     */
+	uint32_t	esp1;
+	uint32_t	ss1;
+	uint32_t	esp2;
+	uint32_t	ss2;
+	uint32_t	cr3;
+	uint32_t	eip;
+	uint32_t	flags;
+	uint32_t	eax;
+	uint32_t	ecx;
+	uint32_t	edx;
+	uint32_t	ebx;
+	uint32_t	esp;
+	uint32_t	ebp;
+	uint32_t	esi;
+	uint32_t	edi;
+	uint32_t	es;
+	uint32_t	cs;
+	uint32_t	ss;
+	uint32_t	ds;
+	uint32_t	fs;
+	uint32_t	gs;
+	uint32_t	ldt;
+	uint16_t	trap;
+	uint16_t	iobase;	/* I/O位图基址大于或等于TSS段界限，就表示没有I/O许可位图 */
+}tss_t;
+
+/* 线性地址 → 物理地址 */
+#define vir2phys(seg_base, vir)	(uint32_t)(((uint32_t)seg_base) + (uint32_t)(vir))
 
 #endif
 

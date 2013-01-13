@@ -1,6 +1,6 @@
 #include "pub.h"
+#include "string.h"
 
-extern void disp_str(char* str);
 
 void reverse_string(char* string, int len)
 {
@@ -60,4 +60,13 @@ void disp_int(int number)
 	char str[16] = {0};
 	(void)itoa(str, number);
 	disp_str(str);
+}
+
+#define DELAY_LOOP 1000000
+void delay(int time)
+{
+	int i, j;
+	for (i = 0; i < time; ++i)
+		for (j = 0; j < DELAY_LOOP; ++j)
+		{}
 }

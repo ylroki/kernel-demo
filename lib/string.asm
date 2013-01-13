@@ -1,7 +1,7 @@
-global memcpy
 ;----------------------
 ; Function memcpy
 ; Just as void* memcpy(void* dst, void*, src, int size);
+global memcpy
 memcpy:
 	push ebp
 	mov ebp, esp
@@ -31,6 +31,40 @@ memcpy:
 	pop esi
 	pop ebp
 	ret
+
+;----------------------
+; Function memset
+; Just as void* memset(void* dst, BYTE src, int size);
+global memset
+memset:
+	push ebp
+	mov ebp, esp
+	push esi
+	push edi
+	push ecx
+
+	mov edi, [ebp + 8]; destination
+	mov edx, [ebp + 12]; source
+	mov ecx, [ebp + 16]; size
+.begin:
+	cmp ecx, 0
+	jz .end
+
+	mov byte[edi], dl
+	inc edi
+
+	dec ecx
+	jmp .begin
+
+.end:
+	mov eax, [ebp + 8]
+
+	pop ecx
+	pop edi
+	pop esi
+	pop ebp
+	ret
+
 
 ;--------------------------
 ; Function void disp_str(char*);

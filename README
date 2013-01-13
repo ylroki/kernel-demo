@@ -5,3 +5,20 @@
 2 Run bochs:
 	Just type 'bochs', OS's kernel placed at address 0x30400,
 	you can make breakpoint at that address.
+
+3 Code file and directroy:	
+	bochsout.txt	//
+	bochsrc		//configuration of bochs
+	boot		//dir, boot,loader...
+	build		//dir, binary file, *.bin
+	docs		//dir, documents
+	image		//dir, *.img
+	include		//dir, struct, macro, declearation..
+	kernel		//dir, *.c,*.asm
+	lib			//dir, common function like disp_str()...
+	Makefile	//
+	obj			//dir, *.o
+	README
+	script
+	tags
+	temp

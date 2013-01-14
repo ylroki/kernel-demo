@@ -281,10 +281,14 @@ void init_protect_mode()
 	g_tss.iobase = sizeof(g_tss); /* 没有I/O许可位图 */
 
 	/* 填充 GDT 中进程的 LDT 的描述符 */
-	init_descriptor(&g_gdt[INDEX_LDT_FIRST],
-		vir2phys(seg2phys(SELECTOR_KERNEL_DS), g_proc_table[0].ldts),
-		LDT_SIZE * sizeof(descriptor_t) - 1,
-		DA_LDT);
+	int idx = 0;
+	for (idx = 0; idx < PROC_MAX; ++idx)
+	{
+		init_descriptor(&g_gdt[INDEX_LDT_FIRST + idx<<3],
+			vir2phys(seg2phys(SELECTOR_KERNEL_DS), g_proc_table[idx].ldts),
+			LDT_SIZE * sizeof(descriptor_t) - 1,
+			DA_LDT);
+	}
 }
 
 

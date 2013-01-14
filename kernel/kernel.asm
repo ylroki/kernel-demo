@@ -5,6 +5,7 @@ extern exception_handler
 extern mask_interrupt_handler
 extern disp_str
 extern kernel_main
+extern kernel_schedule
 
 extern g_gdt_ptr
 extern g_idt_ptr
@@ -130,6 +131,8 @@ mask_int_func0:                ; Interrupt routine for irq 0 (the clock).
 	push clock_int_msg
 	call disp_str
 	add esp, 4
+
+	call kernel_schedule
 
 	cli
 	;switch to process

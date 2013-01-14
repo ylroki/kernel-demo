@@ -34,4 +34,8 @@ typedef struct proc_s
 	uint32_t pid;
 	char proc_name[PROC_NAME_MAX];
 }proc_t;
+
+
+typedef void (*proc_func)();
+
 #endif

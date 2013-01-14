@@ -14,7 +14,7 @@ uint8_t g_exited;
 proc_t* g_proc_ready;
 proc_t g_proc_table[PROC_MAX];
 
-char g_task_stack[STACK_SIZE];
+char g_task_stack[STACK_SIZE*PROC_MAX];
 
 tss_t g_tss;
 

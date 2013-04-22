@@ -21,7 +21,7 @@ BS_FileSystype db 'FAT12   '; 8 bytes
 ; end of FAT12  boot sector format
 
 FAT1SectorNo equ 1
-RootDirNo	equ 19
+RootDirNo   equ 19
 RootDirSectors equ 14
 DeltaSectorNo equ 17
 

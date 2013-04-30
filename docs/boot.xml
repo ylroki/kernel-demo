@@ -1,0 +1,38 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+    "/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd">
+
+<article>
+	<articleinfo>
+        <title>Boot</title>
+        <author><firstname>Leo</firstname><surname>Ye</surname></author>
+	</articleinfo>
+
+	<sect1><title>Boot Sector</title>
+		<para>On an IBM PC compatible machine, the BIOS selects a boot device,
+			then copies the first sector from the device, into physical memory
+			at address 0x7c00.
+			The last two byte at boot sector, should be 0x55, 0xAA.</para>
+		<para>My project follows this rule, I use floopy disk(virtualize)
+			as boot device. It is created by bximage, and I place it in directory
+			"image/", named "my_os.img".</para>
+		<para>The source code of boot sector is "boot.asm", and generate "boot.bin".
+			I use command "dd" to write it into "my_os.img".
+			Because of the sector size limit, "boot.bin" is small and simple, 
+			it just read my_os.img(I make FAT12 filesystem on it) to find "load.bin".
+			"load.bin" is copied into memory at address 0x80000, and it will load
+			the my kernel.  </para>
+		<para>TODO: FAT12</para>
+	</sect1>
+
+	<sect1><title>Loader</title>
+		<para>The source code of loader is "loader.asm".</para>
+		<para>Loader read my_os.img to find "kernel.bin",
+			copy it to memory at address 0x90000, then jump into protect mode.
+			Set paging, copy program section of "kernel.bin" into address 0x30400.</para>
+		<para>TODO: protect mode, ELF, paging</para>
+	</sect1>
+	<sect1><title></title>
+	</sect1>
+	<sect1><title></title>
+	</sect1>
+</article>

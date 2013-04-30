@@ -13,6 +13,8 @@ LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 OBJS = obj/kernel.o obj/string.o obj/start.o obj/protect.o obj/kliba.o obj/klib.o\
 	obj/global.o obj/main.o
 
+DOCBOOK_XSL = /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl
+
 all: build/boot.bin build/loader.bin build/kernel.bin
 	dd if=build/boot.bin of=image/my_os.img bs=512 count=1 conv=notrunc
 	sudo mount image/my_os.img /mnt/floppy
@@ -63,8 +65,9 @@ build/kernel.bin: ${OBJS}
 	${LD} ${LD_FLAG} -o $@ ${OBJS}
 
 # document
-doc_env:
-	xsltproc \
-	--output docs/environment.html \
-	/usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl \
-	docs/environment.xml
+DOCS = docs/boot.html
+
+docs: ${DOCS}
+
+docs/boot.html: docs/boot.xml
+	xsltproc --output $@ ${DOCBOOK_XSL} $<

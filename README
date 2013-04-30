@@ -1,24 +1,68 @@
-1 compile:
-	To clean all objects, type command 'make clean';
-	To make all objects, type command 'make all'
+Code file and directroy:
+	bochsrc		/* configuration of bochs */
+	boot		/* booter,loader... */
+	docs		/*  documents */
+	include		/* struct, macro, declearation... */ 
+	kernel		/* kernel */
+	lib			/* common function like disp_str()... */
+	Makefile	
+	README
 
-2 Run bochs:
-	Just type 'bochs', OS's kernel placed at address 0x30400,
+All operations below are tested in Lubuntu 13.04,
+I suppose it also works at Ubuntu.
+
+Install bochs
+	bochs is a x86 PC emulator, it can run our kernel demo.
+	In order to enable debugger, you should download source and compile it.
+
+	For example, download file "bochs-2.6.1.tar.gz", and extract it.
+	$ tar -zxvf bochs-2.6.1.tar.gz
+
+	Before generating Makefile, maybe some librarys are needed.
+	$ sudo apt-get install gcc
+	$ sudo apt-get install build-essential
+	$ sudo apt-get install xorg-dev
+	$ sudo apt-get install libgtk2.0-dev
+
+	Then, enter the source directory
+	$ cd bochs-2.6.1
+
+	There is a mistake to generate Makefile,
+	we should fix it.
+	$ vim Makefile.in
+	At line 190 of Makefile.in, add "-lpthread"
+
+	Then, generate Makefile, compile, link, and install
+	$ ./configure --enable-debugger --enable-disasm 
+	$ make
+	$ sudo make install
+
+Prepare directory
+	At the root directory of our repository,
+	$ mkdir image
+	$ mkdir build
+	$ mkdir obj
+	$ cd /mnt;sudo mkdir floppy;cd -
+
+
+Creare image file
+	Create image file "my_os.img"
+	$ cd image
+	$ bximage
+	
+	Make filesystem
+	$ mkfs.msdos my_os.img
+	$ cd ..
+
+
+Build:
+	We need nasm
+	$ sudo apt-get install nasm
+	$ make all
+
+Run bochs:
+	The configure file "bochsrc" is in repository now, 
+	so just type 'bochs', OS's kernel placed at address 0x30400,
 	you can make breakpoint at that address.
 
-3 Code file and directroy:	
-	bochsout.txt	//
-	bochsrc		//configuration of bochs
-	boot		//dir, boot,loader...
-	build		//dir, binary file, *.bin
-	docs		//dir, documents
-	image		//dir, *.img
-	include		//dir, struct, macro, declearation..
-	kernel		//dir, *.c,*.asm
-	lib			//dir, common function like disp_str()...
-	Makefile	//
-	obj			//dir, *.o
-	README
-	script
-	tags
-	temp
+

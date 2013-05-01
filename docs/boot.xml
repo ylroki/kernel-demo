@@ -31,7 +31,9 @@
 			Set paging, copy program section of "kernel.bin" into address 0x30400.</para>
 		<para>TODO: protect mode, ELF, paging</para>
 	</sect1>
-	<sect1><title></title>
+
+	<sect1><title>Memory Layout</title>
+		<imagedata fileref="mem_layout.jpeg"/>
 	</sect1>
 	<sect1><title></title>
 	</sect1>

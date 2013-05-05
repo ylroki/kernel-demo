@@ -65,9 +65,12 @@ build/kernel.bin: ${OBJS}
 	${LD} ${LD_FLAG} -o $@ ${OBJS}
 
 # document
-DOCS = docs/boot.html
+DOCS = docs/boot.html docs/protect_mode.html
 
 docs: ${DOCS}
 
 docs/boot.html: docs/boot.xml
+	xsltproc --output $@ ${DOCBOOK_XSL} $<
+
+docs/protect_mode.html: docs/protect_mode.xml
 	xsltproc --output $@ ${DOCBOOK_XSL} $<

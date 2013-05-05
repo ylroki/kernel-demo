@@ -1,0 +1,62 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+    "/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd">
+
+<article>
+	<articleinfo>
+        <title>Protect Mode</title>
+        <author><firstname>Leo</firstname><surname>Ye</surname></author>
+	</articleinfo>
+
+	<sect1><title>Introduce</title>
+		<para>Under IA32, CPU works with two mode called <emphasis>Real Mode</emphasis>
+			and <emphasis>Protect Mode</emphasis>. In Real Mode, it supports 16-bits register,
+			16-bits data bus, 20-bits address bus, and 1 MB addressing limit.</para>
+		<para>Given Logic Address "Segment:Offset", compute Physical Address according to
+			"Physical Address = Segment * 16 + Offset".</para>
+		<para>But in Protect Mode, things become a little differnt.
+			It also use "Segment:Offset" to describe Logic Address, but the value of
+			the Segment is a index point to an entry in a table.
+			This entry defines the start address of "Segment",
+			with address limt, attribution, and so on.
+			We call the entry "Descriptor",
+			and the table "GDT" (GDT, it's short for Global Descriptor Table).</para>
+		<para>With 32-bits Address Bus,
+			the Address Space in Protect Mode could become 4GB.</para>
+	</sect1>
+
+	<sect1><title>Jump Into Protect Mode</title>
+		<procedure>
+			<step>Prepare GDT</step>
+			<step>Use lgdt to load gdtr</step>
+			<step>Open A20</step>
+			<step>Set PE in cr0</step>
+			<step>Jump into Protect Mode</step>
+		</procedure>
+	</sect1>
+
+	<sect1><title>Paging</title>
+		<para>We have learnt how logic Address map to linear address in protect mode.
+			There still is a question how linear address map to physical address.
+			First, we give a quick look of "Addressing at Protect Mode"</para>
+		<imagedata fileref="logic2phy.jpeg"/>
+		<para>So, we can see that the 32-bits linear address splits into 3 parts.
+			High 10-bits means the offset of Page Directory Table(PDT).
+			The Page Directory Entry(PDE) in PDT is address of a Page Table(PT).
+			So with the High 10-bits, we can find the PT.
+			And the middle 10-bits means offset of the found PT.
+			The Page Table Entry(PTE) in PT is the address of Physical Page.
+			SO with the Middle 10-bits, we can find the Physical Page.
+			And the Low 12-bits is the offset of Physical Page,
+			the content there is the final Physical Address.</para>
+		<para></para>
+	</sect1>
+
+	<sect1><title>Descriptor And Selector</title>
+	</sect1>
+
+	<sect1><title>Privilege Level</title>
+	</sect1>
+	
+	<sect1><title>Interruption And Exception</title>
+	</sect1>
+</article>

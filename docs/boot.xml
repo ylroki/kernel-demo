@@ -35,8 +35,4 @@
 	<sect1><title>Memory Layout</title>
 		<imagedata fileref="mem_layout.jpeg"/>
 	</sect1>
-
-	<sect1><title>Addressing at Protect Mode</title>
-		<imagedata fileref="logic2phy.jpeg"/>
-	</sect1>
-</article>
+	</article>

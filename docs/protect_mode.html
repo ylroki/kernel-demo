@@ -1,0 +1,21 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Protect Mode</title><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" title="Protect Mode"><div class="titlepage"><div><div><h2 class="title"><a name="idm14635720"></a>Protect Mode</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Leo</span> <span class="surname">Ye</span></h3></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#idp107304">Introduce</a></span></dt><dt><span class="sect1"><a href="#idp110224">Jump Into Protect Mode</a></span></dt><dt><span class="sect1"><a href="#idp112344">Paging</a></span></dt><dt><span class="sect1"><a href="#idp2489904">Descriptor And Selector</a></span></dt><dt><span class="sect1"><a href="#idp1989696">Privilege Level</a></span></dt><dt><span class="sect1"><a href="#idp2114984">Interruption And Exception</a></span></dt></dl></div><div class="sect1" title="Introduce"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp107304"></a>Introduce</h2></div></div></div><p>Under IA32, CPU works with two mode called <span class="emphasis"><em>Real Mode</em></span>
+			and <span class="emphasis"><em>Protect Mode</em></span>. In Real Mode, it supports 16-bits register,
+			16-bits data bus, 20-bits address bus, and 1 MB addressing limit.</p><p>Given Logic Address "Segment:Offset", compute Physical Address according to
+			"Physical Address = Segment * 16 + Offset".</p><p>But in Protect Mode, things become a little differnt.
+			It also use "Segment:Offset" to describe Logic Address, but the value of
+			the Segment is a index point to an entry in a table.
+			This entry defines the start address of "Segment",
+			with address limt, attribution, and so on.
+			We call the entry "Descriptor",
+			and the table "GDT" (GDT, it's short for Global Descriptor Table).</p><p>With 32-bits Address Bus,
+			the Address Space in Protect Mode could become 4GB.</p></div><div class="sect1" title="Jump Into Protect Mode"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp110224"></a>Jump Into Protect Mode</h2></div></div></div><div class="procedure"><ol class="procedure" type="1"><li class="step" title="Step 1">Prepare GDT</li><li class="step" title="Step 2">Use lgdt to load gdtr</li><li class="step" title="Step 3">Open A20</li><li class="step" title="Step 4">Set PE in cr0</li><li class="step" title="Step 5">Jump into Protect Mode</li></ol></div></div><div class="sect1" title="Paging"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp112344"></a>Paging</h2></div></div></div><p>We have learnt how logic Address map to linear address in protect mode.
+			There still is a question how linear address map to physical address.
+			First, we give a quick look of "Addressing at Protect Mode"</p><img src="logic2phy.jpeg"><p>So, we can see that the 32-bits linear address splits into 3 parts.
+			High 10-bits means the offset of Page Directory Table(PDT).
+			The Page Directory Entry(PDE) in PDT is address of a Page Table(PT).
+			So with the High 10-bits, we can find the PT.
+			And the middle 10-bits means offset of the found PT.
+			The Page Table Entry(PTE) in PT is the address of Physical Page.
+			SO with the Middle 10-bits, we can find the Physical Page.
+			And the Low 12-bits is the offset of Physical Page,
+			the content there is the final Physical Address.</p><p></p></div><div class="sect1" title="Descriptor And Selector"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp2489904"></a>Descriptor And Selector</h2></div></div></div></div><div class="sect1" title="Privilege Level"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp1989696"></a>Privilege Level</h2></div></div></div></div><div class="sect1" title="Interruption And Exception"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp2114984"></a>Interruption And Exception</h2></div></div></div></div></div></body></html>

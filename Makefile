@@ -74,3 +74,15 @@ docs/boot.html: docs/boot.xml
 
 docs/protect_mode.html: docs/protect_mode.xml
 	xsltproc --output $@ ${DOCBOOK_XSL} $<
+
+# picture
+
+PIC = docs/descriptor.png docs/selector.png
+
+pic: ${PIC}
+
+docs/descriptor.png: docs/descriptor.dot
+	dot $< -Tpng -o $@
+
+docs/selector.png: docs/selector.dot
+	dot $< -Tpng -o $@

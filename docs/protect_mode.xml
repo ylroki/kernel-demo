@@ -15,7 +15,7 @@
 			"Physical Address = Segment * 16 + Offset".</para>
 		<para>But in Protect Mode, things become a little differnt.
 			It also use "Segment:Offset" to describe Logic Address, but the value of
-			the Segment is a index point to an entry in a table.
+			the Segment is a index(Selector) point to an entry in a table.
 			This entry defines the start address of "Segment",
 			with address limt, attribution, and so on.
 			We call the entry "Descriptor",
@@ -52,6 +52,98 @@
 	</sect1>
 
 	<sect1><title>Descriptor And Selector</title>
+		<para>Here is structure of Descriptor.</para>
+		<imageobject><imagedata fileref="descriptor.png"/></imageobject>
+		<para>It is 8-Bytes structure, "Segment Base Address" split into 2 parts,
+			and so does the "Segment Limit".</para>
+		<para>It also has some attributions, I will introduce it.</para>
+		<itemizedlist>
+			<listitem><emphasis>P</emphasis>: P=1, segment is in memory;
+				P=0, segment isn't in memory.</listitem>
+			<listitem><emphasis>DPL</emphasis>: Descriptor Privilege Level</listitem>
+			<listitem><emphasis>S</emphasis>: S=1, data or code segment;
+				S=0, system or gate segment.</listitem>
+			<listitem><emphasis>TYPE</emphasis>
+				<informaltable frame="all">
+					<tgroup cols="3">
+					<thead><row><entry>Value</entry>
+						<entry>S=1</entry>
+						<entry>S=0</entry></row></thead>
+					<tbody>
+					<row><entry>0</entry>
+						<entry>read only</entry>
+						<entry>undefined</entry></row>
+					<row><entry>1</entry>
+						<entry>read only, accessed</entry>
+						<entry>286TSS</entry></row>
+					<row><entry>2</entry>
+						<entry>read/write</entry>
+						<entry>LDT</entry></row>
+					<row><entry>3</entry>
+						<entry>read/write, accessed</entry>
+						<entry>busy 286TSS</entry></row>
+					<row><entry>4</entry>
+						<entry>read only, expand-down</entry>
+						<entry>286 call gate</entry></row>
+					<row><entry>5</entry>
+						<entry>read only, expand-down, accessed</entry>
+						<entry>task gate</entry></row>
+					<row><entry>6</entry>
+						<entry>read/write, expand-down</entry>
+						<entry>286 interrupt gate</entry></row>
+					<row><entry>7</entry>
+						<entry>read/write, expand-down, accessed</entry>
+						<entry>286 trap gate</entry></row>
+					<row><entry>8</entry>
+						<entry>execute only</entry>
+						<entry>undefined</entry></row>
+					<row><entry>9</entry>
+						<entry>execute only, accessed</entry>
+						<entry>386TSS</entry></row>
+					<row><entry>A</entry>
+						<entry>execute/read</entry>
+						<entry>undefined</entry></row>
+					<row><entry>B</entry>
+						<entry>execute/read, accessed</entry>
+						<entry>busy 386TSS</entry></row>
+					<row><entry>C</entry>
+						<entry>execute only, conforming code segment</entry>
+						<entry>386 call gate</entry></row>
+					<row><entry>D</entry>
+						<entry>execute only, conforming code segment, accessed</entry>
+						<entry>undefined</entry></row>
+					<row><entry>E</entry>
+						<entry>execute/read, conforming code segment</entry>
+						<entry>386 interrupt gate</entry></row>
+					<row><entry>F</entry>
+						<entry>execute/read, conforming code segment, accessed</entry>
+						<entry>386 trap gate</entry></row>
+					</tbody>
+					</tgroup>
+				</informaltable></listitem>
+			<listitem><emphasis>G</emphasis>: Describe the Granularity of Segment Limit.
+				G=0, granularity is BYTE; G=1, 4KB.</listitem>
+			<listitem><emphasis>D/B</emphasis>: It has 3 situation
+				<itemizedlist>
+					<listitem>In descriptor of executable code, it is D.
+						D=1, instruction use 32-bits address and
+						32-bits or 8-bits operand;
+						D=0, instruction use 16-bits address and
+						16-bits or 8-bits operand.</listitem>
+					<listitem>In descriptor of expand-down data segment, it is B.
+						B=1, segment upper limit is 4GB; B=0, 64KB</listitem>
+					<listitem>In descriptor of stack, it is B.
+						B=1, use 32-bits register esp; B=0, use sp.</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem><emphasis>AVL</emphasis>: reserve</listitem>
+		</itemizedlist>
+		<para>And here is struct of Selector.</para>
+		<imageobject><imagedata fileref="selector.png"/></imageobject>
+		<para>It is a 16-Bits structurre.
+			Because the size of Descriptor is 8, so the low 3-bits of Selector
+			can be used as attribution.</para>
+
 	</sect1>
 
 	<sect1><title>Privilege Level</title>

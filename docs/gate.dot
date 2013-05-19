@@ -1,0 +1,66 @@
+digraph
+{
+	node [shape="none"];
+
+	des [label=<
+		<TABLE border="0" cellborder="1" cellspacing="0" cellpadding="0">
+			//first row
+			<TR>
+				<TD>BYTE 7</TD>
+				<TD>BYTE 6</TD>
+				<TD>BYTE 5</TD>
+				<TD>BYTE 4</TD>
+				<TD>BYTE 3</TD>
+				<TD>BYTE 2</TD>
+				<TD>BYTE 1</TD>
+				<TD>BYTE 0</TD>
+			</TR>
+
+			//second row
+			<TR>
+				<TD width="100" colspan="2">Offset 2</TD>
+				<TD width="100" colspan="2" port="attr" bgcolor="yellow">Attribute</TD>
+				<TD width="100" colspan="2">Selector</TD>
+				<TD width="100" colspan="2">Offset 1</TD>
+			</TR>
+		</TABLE>
+	>];
+
+	attr [label=<
+		<TABLE border="0" cellborder="1" cellspacing="0" cellpadding="0">
+			//first row
+			<TR>
+				<TD>7</TD>
+				<TD>6</TD>
+				<TD>5</TD>
+				<TD>4</TD>
+				<TD>3</TD>
+				<TD>2</TD>
+				<TD>1</TD>
+				<TD>0</TD>
+				<TD>7</TD>
+				<TD>6</TD>
+				<TD>5</TD>
+				<TD>4</TD>
+				<TD>3</TD>
+				<TD>2</TD>
+				<TD>1</TD>
+				<TD>0</TD>
+			</TR>
+
+			//second row
+			<TR>
+				<TD width="25">P</TD>
+				<TD width="50" colspan="2">DPL</TD>
+				<TD width="25">S</TD>
+				<TD width="100" colspan="4">TYPE</TD>
+				<TD width="25">0</TD>
+				<TD width="25">0</TD>
+				<TD width="25">0</TD>
+				<TD width="125" colspan="5">Param Count</TD>
+			</TR>
+		</TABLE>
+	>];
+
+	des:attr->attr;
+}

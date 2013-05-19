@@ -64,20 +64,10 @@ obj/main.o: kernel/main.c
 build/kernel.bin: ${OBJS}
 	${LD} ${LD_FLAG} -o $@ ${OBJS}
 
-# document
-DOCS = docs/boot.html docs/protect_mode.html
-
-docs: ${DOCS}
-
-docs/boot.html: docs/boot.xml
-	xsltproc --output $@ ${DOCBOOK_XSL} $<
-
-docs/protect_mode.html: docs/protect_mode.xml
-	xsltproc --output $@ ${DOCBOOK_XSL} $<
 
 # picture
 
-PIC = docs/descriptor.png docs/selector.png
+PIC = docs/descriptor.png docs/selector.png docs/gate.png
 
 pic: ${PIC}
 
@@ -86,3 +76,19 @@ docs/descriptor.png: docs/descriptor.dot
 
 docs/selector.png: docs/selector.dot
 	dot $< -Tpng -o $@
+
+docs/gate.png: docs/gate.dot
+	dot $< -Tpng -o $@
+
+# document
+DOCS = docs/boot.html docs/protect_mode.html
+
+docs: ${DOCS} ${PIC}
+
+docs/boot.html: docs/boot.xml
+	xsltproc --output $@ ${DOCBOOK_XSL} $<
+
+docs/protect_mode.html: docs/protect_mode.xml
+	xsltproc --output $@ ${DOCBOOK_XSL} $<
+
+

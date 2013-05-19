@@ -147,6 +147,47 @@
 	</sect1>
 
 	<sect1><title>Privilege Level</title>
+		<para>In IA32, there are 4 Privilage Level, 0 to 3 from high to low.
+			While a low level task access to high level segment, it causes a error.</para>
+		<para>But with different types of segment, the privilege may be different.
+			In previous section, we can see RPL in Selector and DPL in Descriptor,
+			With CPL(store in 0th-bit and 1th-bit in cs and ss),
+			these will take effect.</para>
+			<informaltable frame="all">
+				<tgroup cols="2">
+				<thead><row><entry>Type of Segment</entry>
+					<entry>Accessable</entry></row></thead>
+				<tbody>
+				<row><entry>Data Segment</entry>
+					<entry>max(CPL, RPL) &le; DPL </entry>
+				</row>
+				<row><entry>TSS</entry>
+					<entry>max(CPL, RPL) &le; DPL </entry>
+				</row>
+				<row><entry>Call Gate</entry>
+					<entry>max(CPL, RPL) &le; DPL </entry>
+				</row>
+				<row><entry>IUnconforming Code Segment</entry>
+					<entry>CPL = DPL and RPL &le; DPL</entry>
+				</row>
+				<row><entry>Conforming Code Segment</entry>
+					<entry>CPL &ge; DPL</entry>
+				</row>
+				<row><entry>Inconforming Code Segment(Use Call Gate and "call")</entry>
+					<entry>CPL &ge; DPL</entry>
+				</row>
+				<row><entry>Inconforming Code Segment(Use Call Gate and "jmp")</entry>
+					<entry>CPL = DPL</entry>
+				</row>
+				</tbody>
+				</tgroup>
+			</informaltable>
+		<para>Low level can use call gate to access high level Inconforming code segment.
+			What is Call Gate?</para>
+		<imageobject><imagedata fileref="gate.png"/></imageobject>
+		<para>Call gate is a "Gate" to access destination code segment.
+			So it has the selector and offset address of destination code segment.</para>
+		<para>TODO: stack when call</para>
 	</sect1>
 	
 	<sect1><title>Interruption And Exception</title>

@@ -52,6 +52,7 @@
 	</sect1>
 
 	<sect1><title>Descriptor And Selector</title>
+		<sect2><title>Descriptor</title>
 		<para>Here is structure of Descriptor.</para>
 		<imageobject><imagedata fileref="descriptor.png"/></imageobject>
 		<para>It is 8-Bytes structure, "Segment Base Address" split into 2 parts,
@@ -138,11 +139,15 @@
 			</listitem>
 			<listitem><emphasis>AVL</emphasis>: reserve</listitem>
 		</itemizedlist>
+		</sect2>
+
+		<sect2><title>Selector</title>
 		<para>And here is struct of Selector.</para>
 		<imageobject><imagedata fileref="selector.png"/></imageobject>
 		<para>It is a 16-Bits structurre.
 			Because the size of Descriptor is 8, so the low 3-bits of Selector
 			can be used as attribution.</para>
+		</sect2>
 
 	</sect1>
 
@@ -182,12 +187,42 @@
 				</tbody>
 				</tgroup>
 			</informaltable>
+
+		<sect2><title>Call Gate</title>
 		<para>Low level can use call gate to access high level Inconforming code segment.
 			What is Call Gate?</para>
 		<imageobject><imagedata fileref="gate.png"/></imageobject>
 		<para>Call gate is a "Gate" to access destination code segment.
 			So it has the selector and offset address of destination code segment.</para>
-		<para>TODO: stack when call</para>
+
+		<para>Here is the call gate procedure of CPU</para>
+		<procedure>
+			<step>According to DPL of destination code segment,
+				select SS and ESP from TSS.</step>
+			<step>Load new SS and ESP.</step>
+			<step>push old SS and ESP into new stack.</step>
+			<step>According to "Param Count" in call gate,
+				copy parameters in caller's stack to new stack.</step>
+			<step>push old CS and EIP into new stack.</step>
+			<step>Load new CS and EIP, then execute.</step>
+		</procedure>
+		<para>These two stack might look like below.</para>
+		<imageobject><imagedata fileref="low2high_stack.png"/></imageobject>
+
+		<para>Here is the "ret" procedure of CPU</para>
+		<procedure>
+			<step>Check RPL in CS if privilege level should change.</step>
+			<step>Load CS and EIP of caller.</step>
+			<step>Accorind to argument of "ret", add esp to skip parameters.</step>
+			<step>Load SS and ESP.</step>
+			<step>Accorind to argument of "ret", add esp to skip parameters.</step>
+			<step>Check ds,es,fs,gs, if DPL of selector in them smaller then
+				CPL, set them nil.</step>
+		</procedure>
+		<para>These two stack might look like below.</para>
+		<imageobject><imagedata fileref="high2low_stack.png"/></imageobject>
+
+		</sect2>
 	</sect1>
 	
 	<sect1><title>Interruption And Exception</title>

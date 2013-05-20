@@ -1,0 +1,59 @@
+digraph
+{
+	node [shape="none"]
+	label="Stack change while privilege level changing from high to low"
+	
+	rankdir=LR	
+	subgraph cluster_low
+	{
+		label="Stack of Caller"
+		l_idx [label=<
+			<table border="0">
+				<tr><td port="1">esp after "ret"</td></tr>
+			</table>
+		>];
+
+		l_mem [label=<
+			<table border="0" cellborder="1" cellspacing="0">
+				<tr><td>High Address</td></tr>
+				<tr><td port="1"> </td></tr>
+				<tr><td>para 1</td></tr>
+				<tr><td>para 2</td></tr>
+				<tr><td>para 3</td></tr>
+				<tr><td> </td></tr>
+				<tr><td>Low Address</td></tr>
+			</table>
+		>];
+		
+		l_idx:1 -> l_mem:1;
+	}
+
+	subgraph cluster_high
+	{
+		label="Stack of Being Called"
+		rankdir=LR	
+		h_idx [label=<
+			<table border="0">
+				<tr><td port="1">esp before "ret"</td></tr>
+			</table>
+		>];
+
+		h_mem [label=<
+			<table border="0" cellborder="1" cellspacing="0">
+				<tr><td>High Address</td></tr>
+				<tr><td> </td></tr>
+				<tr><td>ss of caller</td></tr>
+				<tr><td>esp of caller</td></tr>
+				<tr><td>para 1</td></tr>
+				<tr><td>para 2</td></tr>
+				<tr><td>para 3</td></tr>
+				<tr><td>cs of caller</td></tr>
+				<tr><td port="1">eip of caller</td></tr>
+				<tr><td> </td></tr>
+				<tr><td>Low Address</td></tr>
+			</table>
+		>];
+		
+		h_idx:1 -> h_mem:1;
+	}
+}

@@ -4,4 +4,5 @@ obj
 *.img
 *.bin
 *.txt
+*.html
 tags

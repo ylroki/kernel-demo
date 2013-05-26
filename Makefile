@@ -71,15 +71,9 @@ pic:
 	cd docs/dot; ./configure ; make; rm -f Makefile
 	mv docs/dot/*.png docs/res
 
-# document
-DOCS = docs/boot.html docs/protect_mode.html
+html:
+	cd docs/xml; ./configure ;make; rm -f Makefile
+	mv docs/xml/*.html docs
 
-docs: ${DOCS} ${PIC}
-
-docs/boot.html: docs/boot.xml
-	xsltproc --output $@ ${DOCBOOK_XSL} $<
-
-docs/protect_mode.html: docs/protect_mode.xml
-	xsltproc --output $@ ${DOCBOOK_XSL} $<
-
+docs: pic html
 

@@ -67,26 +67,9 @@ build/kernel.bin: ${OBJS}
 
 # picture
 
-PIC = docs/descriptor.png docs/selector.png docs/gate.png \
-	docs/low2high_stack.png\
-	docs/high2low_stack.png
-
-pic: ${PIC}
-
-docs/descriptor.png: docs/descriptor.dot
-	dot $< -Tpng -o $@
-
-docs/selector.png: docs/selector.dot
-	dot $< -Tpng -o $@
-
-docs/gate.png: docs/gate.dot
-	dot $< -Tpng -o $@
-
-docs/low2high_stack.png: docs/low2high_stack.dot
-	dot $< -Tpng -o $@
-
-docs/high2low_stack.png: docs/high2low_stack.dot
-	dot $< -Tpng -o $@
+pic:
+	cd docs/dot; ./configure ; make; rm -f Makefile
+	mv docs/dot/*.png docs/res
 
 # document
 DOCS = docs/boot.html docs/protect_mode.html

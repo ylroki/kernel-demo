@@ -1,0 +1,12 @@
+
+ls |egrep "\.xml"|\
+	awk -F \. \
+	'BEGIN{suffix="html";all="";file="";lib="/usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl"}\
+	{\
+		obj = $1; \
+		file = file""obj"."suffix": "obj".xml\n"; \
+		file = file"\txsltproc --output $@ "lib" $<\n"; \
+		all = all" "obj"."suffix""; \
+	}\
+	END{print "OBJ = "all"\n"suffix": ${OBJ}";print file}'\
+>Makefile

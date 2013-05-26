@@ -1,0 +1,12 @@
+
+ls |egrep "\.dot"|\
+	awk -F \. \
+	'BEGIN{suffix="png";all="";file=""}\
+	{\
+		obj = $1; \
+		file = file""obj"."suffix": "obj".dot\n"; \
+		file = file"\tdot $< -T"suffix" -o $@\n"; \
+		all = all" "obj"."suffix""; \
+	}\
+	END{print "OBJ = "all"\n"suffix": ${OBJ}";print file}'\
+>Makefile

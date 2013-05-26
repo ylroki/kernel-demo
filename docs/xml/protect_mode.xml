@@ -194,7 +194,9 @@
 		<imageobject><imagedata fileref="res/gate.png"/></imageobject>
 		<para>Call gate is a "Gate" to access destination code segment.
 			So it has the selector and offset address of destination code segment.</para>
+		</sect2>
 
+		<sect2><title>Jump From Low Level To High</title>
 		<para>Here is the call gate procedure of CPU</para>
 		<procedure>
 			<step>According to DPL of destination code segment,
@@ -208,7 +210,9 @@
 		</procedure>
 		<para>These two stack might look like below.</para>
 		<imageobject><imagedata fileref="res/low2high_stack.png"/></imageobject>
+		</sect2>
 
+		<sect2><title>Jump From High Level To Low</title>
 		<para>Here is the "ret" procedure of CPU</para>
 		<procedure>
 			<step>Check RPL in CS if privilege level should change.</step>
@@ -221,10 +225,18 @@
 		</procedure>
 		<para>These two stack might look like below.</para>
 		<imageobject><imagedata fileref="res/high2low_stack.png"/></imageobject>
-
 		</sect2>
+
 	</sect1>
 	
 	<sect1><title>Interruption And Exception</title>
+		<para>Let me show you what is Interruption and Exception.</para>
+		<imageobject><imagedata fileref="res/int.png"/></imageobject>
+		<para>Vector Number point the gate in IDT.
+			And 0 ~ 19 for exception, 20 ~ 31 are reservation,
+			32 ~ 255 for user(Include external interruption like clock,
+			and interruption caused by instruction "int n").
+			Here is Interruption Gate and Exception Gate.</para>
+		<imageobject><imagedata fileref="res/intgate.png"/></imageobject>
 	</sect1>
 </article>

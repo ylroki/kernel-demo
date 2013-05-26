@@ -1,0 +1,20 @@
+digraph
+{
+	node [shape="record"];
+	rankdir=LR;
+
+	idt [label="IDT|...|<g> Gate|..."];
+	gdt [label="GDT|...|<d> Descriptor|..."];
+	code [shape="none" label=<
+			<table border="0" cellborder="1" cellspacing="0">
+				<tr><td>.<br/>.<br/>.</td></tr>
+				<tr><td bgcolor="blue" port="s"> </td></tr>
+				<tr><td bgcolor="yellow" port="h">handle</td></tr>
+				<tr><td bgcolor="blue"></td> </tr>
+				<tr><td>.<br/>.<br/>.</td></tr>
+			</table>
+			>];
+	idt:g -> gdt:d [label="Seletor"];
+	gdt:d -> code:s;
+	idt:g -> code:h [label="Offset"];
+}

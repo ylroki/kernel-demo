@@ -1,7 +1,7 @@
 digraph
 {
 	node [shape="none"]
-	label="Stack change while privilege level changing"
+	label="Stack change while privilege level changing from low to high"
 	
 	rankdir=LR	
 	subgraph cluster_low

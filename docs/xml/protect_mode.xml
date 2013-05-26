@@ -38,7 +38,7 @@
 		<para>We have learnt how logic Address map to linear address in protect mode.
 			There still is a question how linear address map to physical address.
 			First, we give a quick look of "Addressing at Protect Mode"</para>
-		<imagedata fileref="logic2phy.jpeg"/>
+		<imagedata fileref="res/logic2phy.jpeg"/>
 		<para>So, we can see that the 32-bits linear address splits into 3 parts.
 			High 10-bits means the offset of Page Directory Table(PDT).
 			The Page Directory Entry(PDE) in PDT is address of a Page Table(PT).

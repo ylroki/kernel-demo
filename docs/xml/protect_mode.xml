@@ -54,7 +54,7 @@
 	<sect1><title>Descriptor And Selector</title>
 		<sect2><title>Descriptor</title>
 		<para>Here is structure of Descriptor.</para>
-		<imageobject><imagedata fileref="descriptor.png"/></imageobject>
+		<imageobject><imagedata fileref="res/descriptor.png"/></imageobject>
 		<para>It is 8-Bytes structure, "Segment Base Address" split into 2 parts,
 			and so does the "Segment Limit".</para>
 		<para>It also has some attributions, I will introduce it.</para>
@@ -143,7 +143,7 @@
 
 		<sect2><title>Selector</title>
 		<para>And here is struct of Selector.</para>
-		<imageobject><imagedata fileref="selector.png"/></imageobject>
+		<imageobject><imagedata fileref="res/selector.png"/></imageobject>
 		<para>It is a 16-Bits structurre.
 			Because the size of Descriptor is 8, so the low 3-bits of Selector
 			can be used as attribution.</para>
@@ -191,7 +191,7 @@
 		<sect2><title>Call Gate</title>
 		<para>Low level can use call gate to access high level Inconforming code segment.
 			What is Call Gate?</para>
-		<imageobject><imagedata fileref="gate.png"/></imageobject>
+		<imageobject><imagedata fileref="res/gate.png"/></imageobject>
 		<para>Call gate is a "Gate" to access destination code segment.
 			So it has the selector and offset address of destination code segment.</para>
 
@@ -207,7 +207,7 @@
 			<step>Load new CS and EIP, then execute.</step>
 		</procedure>
 		<para>These two stack might look like below.</para>
-		<imageobject><imagedata fileref="low2high_stack.png"/></imageobject>
+		<imageobject><imagedata fileref="res/low2high_stack.png"/></imageobject>
 
 		<para>Here is the "ret" procedure of CPU</para>
 		<procedure>
@@ -220,7 +220,7 @@
 				CPL, set them nil.</step>
 		</procedure>
 		<para>These two stack might look like below.</para>
-		<imageobject><imagedata fileref="high2low_stack.png"/></imageobject>
+		<imageobject><imagedata fileref="res/high2low_stack.png"/></imageobject>
 
 		</sect2>
 	</sect1>

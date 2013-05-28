@@ -1,0 +1,15 @@
+digraph
+{
+	src [label="source code hello.c"];
+	i [label="hello.i"];
+	ass [label="assemble code hello.s"];
+	obj [label="object file hello.o"];
+	another [label="another obj world.o"]
+	out [label="executable file"];
+
+	src->i [label="Proprocess gcc -E hello.c -o hello.i"];
+	i->ass [label="Compile gcc -S hello.i -o hello.s"];
+	ass->obj [label="Assembly gcc -c hello.s -o hello.o"];
+	obj->out [label="Link"];
+	another->out;
+}

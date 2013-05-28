@@ -1,0 +1,46 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+    "/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd">
+<article>
+	<articleinfo>
+        <title>Compile And Link</title>
+        <author><firstname>Leo</firstname><surname>Ye</surname></author>
+	</articleinfo>
+
+	<sect1><title>Compile</title>
+		<imageobject><imagedata fileref="res/compile.png"/></imageobject>
+	</sect1>
+
+	<sect1><title>Link</title>
+		<sect2><title>Symbol Resolution</title>
+			<para>Bind symbol referrence to symbol definition.</para>
+			<para>Entry of symbol table.</para>
+			<screen>
+		<![CDATA[
+		typedef struct
+		{
+			int name;	/* string table offset*/
+			int value;	/* section offset, or VM address*/
+			int size;	/* object size in bytes*/
+			char type:4,	/* data, func, section, or src file name*/
+				binding:4;	/* local or global*/
+			char reserved;	/* unused*/
+			char section;	/**section header index, ABS, UNDEF, or COMMON/
+		}Elf_Symbol;]]>
+			</screen>
+		</sect2>
+
+		<sect2><title>Relocation</title>
+			<para>Assign address to symbol.</para>
+			<para>Entry of relocation table.</para>
+			<screen>
+		<![CDATA[
+		typedef struct
+		{
+			int offset;		/* offset of the reference to relocate*/
+			int symbol:24;	/* symbol the reference should point to*/
+				type:8;		/* reference type*/
+		}Elf_Rel;]]>
+			</screen>
+		</sect2>
+	</sect1>
+</article>

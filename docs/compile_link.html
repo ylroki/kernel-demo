@@ -1,0 +1,21 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Compile And Link</title><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" title="Compile And Link"><div class="titlepage"><div><div><h2 class="title"><a name="idm14898440"></a>Compile And Link</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Leo</span> <span class="surname">Ye</span></h3></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#idp107104">Compile</a></span></dt><dt><span class="sect1"><a href="#idp108664">Link</a></span></dt><dd><dl><dt><span class="sect2"><a href="#idp108920">Symbol Resolution</a></span></dt><dt><span class="sect2"><a href="#idp2436016">Relocation</a></span></dt></dl></dd></dl></div><div class="sect1" title="Compile"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp107104"></a>Compile</h2></div></div></div><img src="res/compile.png"></div><div class="sect1" title="Link"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp108664"></a>Link</h2></div></div></div><div class="sect2" title="Symbol Resolution"><div class="titlepage"><div><div><h3 class="title"><a name="idp108920"></a>Symbol Resolution</h3></div></div></div><p>Bind symbol referrence to symbol definition.</p><p>Entry of symbol table.</p><pre class="screen">
+		
+		typedef struct
+		{
+			int name;	/* string table offset*/
+			int value;	/* section offset, or VM address*/
+			int size;	/* object size in bytes*/
+			char type:4,	/* data, func, section, or src file name*/
+				binding:4;	/* local or global*/
+			char reserved;	/* unused*/
+			char section;	/**section header index, ABS, UNDEF, or COMMON/
+		}Elf_Symbol;
+			</pre></div><div class="sect2" title="Relocation"><div class="titlepage"><div><div><h3 class="title"><a name="idp2436016"></a>Relocation</h3></div></div></div><p>Assign address to symbol.</p><p>Entry of relocation table.</p><pre class="screen">
+		
+		typedef struct
+		{
+			int offset;		/* offset of the reference to relocate*/
+			int symbol:24;	/* symbol the reference should point to*/
+				type:8;		/* reference type*/
+		}Elf_Rel;
+			</pre></div></div></div></body></html>

@@ -1,0 +1,37 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+    "/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd">
+<article>
+	<articleinfo>
+        <title>Kernel Start</title>
+        <author><firstname>Leo</firstname><surname>Ye</surname></author>
+	</articleinfo>
+
+	<sect1><title>Prepare</title>
+		<procedure>
+			<step>cli before preparation.</step>
+			<step>Prepare kernel stack, just use value stored in esp.</step>
+			<step>Prepare GDT, the address of gdt is new,
+				we use a global value defined in "include/global.c".
+				But the first 4 descriptors are similar to before,
+				and new descrptors could be added below them.</step>
+			<step>Prepare IDT, the contents of idt won't be set yet.</step>
+			<step>Initialize the 8259A chip.</step>
+			<step>Initialize the exception, for each exception,
+				add its gate to idt.</step>
+			<step>Initialize 16 maskable interruption include clock,
+				keyboard and so on. </step>
+			<step>Prepare TSS.</step>
+			<step>Prepare LDT, it is 6th descriptor in GDT.
+				And our simple process will use it.</step>
+			<step>load gdt, idt, tss which we have prepared.</step>
+			<step>Jump to main procedure of kernle, finally we can code with C.</step>
+		</procedure>
+	</sect1>
+	
+	<sect1><title>Main Procedure of Kernel</title>
+		<step>Prepare table of process.</step>
+		<step>Run our first process, it is totally another story...</step>
+		<step>Loop, never exit.</step>
+	</sect1>
+
+</article>

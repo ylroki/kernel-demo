@@ -1,0 +1,55 @@
+digraph
+{
+	node [shape="none"]
+	label="Interrupt happend while process running."
+	
+	rankdir=LR	
+	subgraph cluster_proc
+	{
+		label="Stack of Process"
+		l_idx [label=<
+			<table border="0">
+				<tr><td port="1">esp</td></tr>
+			</table>
+		>];
+
+		l_mem [label=<
+			<table border="0" cellborder="1" cellspacing="0">
+				<tr><td>High Address</td></tr>
+				<tr><td> </td></tr>
+				<tr><td port="1"> </td></tr>
+				<tr><td> </td></tr>
+				<tr><td>Low Address</td></tr>
+			</table>
+		>];
+		
+		l_idx:1 -> l_mem:1;
+	}
+
+	subgraph cluster_int
+	{
+		label="Stack of Interruption"
+		rankdir=LR	
+		h_idx [label=<
+			<table border="0">
+				<tr><td port="1">esp</td></tr>
+			</table>
+		>];
+
+		h_mem [label=<
+			<table border="0" cellborder="1" cellspacing="0">
+				<tr><td>High Address</td></tr>
+				<tr><td> </td></tr>
+				<tr><td>ss of process</td></tr>
+				<tr><td>esp of process</td></tr>
+				<tr><td>eflags</td></tr>
+				<tr><td>cs of process</td></tr>
+				<tr><td port="1">ip of process</td></tr>
+				<tr><td> </td></tr>
+				<tr><td>Low Address</td></tr>
+			</table>
+		>];
+		
+		h_idx:1 -> h_mem:1;
+	}
+}

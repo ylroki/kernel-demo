@@ -1,7 +1,53 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Kernel Start</title><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" title="Kernel Start"><div class="titlepage"><div><div><h2 class="title"><a name="idm14641376"></a>Kernel Start</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Leo</span> <span class="surname">Ye</span></h3></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#idp107152">Prepare</a></span></dt><dt><span class="sect1"><a href="#idp112544">Main Procedure of Kernel</a></span></dt></dl></div><div class="sect1" title="Prepare"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp107152"></a>Prepare</h2></div></div></div><div class="procedure"><ol class="procedure" type="1"><li class="step" title="Step 1">cli before preparation.</li><li class="step" title="Step 2">Prepare kernel stack, just use value stored in esp.</li><li class="step" title="Step 3">Prepare GDT, the address of gdt is new,
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Kernel Start</title><meta name="generator" content="DocBook XSL Stylesheets V1.76.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" title="Kernel Start"><div class="titlepage"><div><div><h2 class="title"><a name="idm14637512"></a>Kernel Start</h2></div><div><div class="author"><h3 class="author"><span class="firstname">Leo</span> <span class="surname">Ye</span></h3></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#idp107272">Prepare</a></span></dt><dt><span class="sect1"><a href="#idp112592">Main Procedure of Kernel</a></span></dt><dt><span class="sect1"><a href="#idp748200">Interrupt Happens While Process Running</a></span></dt><dt><span class="sect1"><a href="#idp2348568">Back To a Process From Interruption</a></span></dt></dl></div><div class="sect1" title="Prepare"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp107272"></a>Prepare</h2></div></div></div><div class="procedure"><ol class="procedure" type="1"><li class="step" title="Step 1">cli before preparation.</li><li class="step" title="Step 2">Prepare kernel stack, just use value stored in esp.</li><li class="step" title="Step 3">Prepare GDT, the address of gdt is new,
 				we use a global value defined in "include/global.c".
 				But the first 4 descriptors are similar to before,
 				and new descrptors could be added below them.</li><li class="step" title="Step 4">Prepare IDT, the contents of idt won't be set yet.</li><li class="step" title="Step 5">Initialize the 8259A chip.</li><li class="step" title="Step 6">Initialize the exception, for each exception,
 				add its gate to idt.</li><li class="step" title="Step 7">Initialize 16 maskable interruption include clock,
 				keyboard and so on. </li><li class="step" title="Step 8">Prepare TSS.</li><li class="step" title="Step 9">Prepare LDT, it is 6th descriptor in GDT.
-				And our simple process will use it.</li><li class="step" title="Step 10">load gdt, idt, tss which we have prepared.</li><li class="step" title="Step 11">Jump to main procedure of kernle, finally we can code with C.</li></ol></div></div><div class="sect1" title="Main Procedure of Kernel"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp112544"></a>Main Procedure of Kernel</h2></div></div></div><li class="step" title="Step 1">Prepare table of process.</li><li class="step" title="Step 2">Run our first process, it is totally another story...</li><li class="step" title="Step 3">Loop, never exit.</li></div></div></body></html>
+				And our simple process will use it.</li><li class="step" title="Step 10">load gdt, idt, tss which we have prepared.</li><li class="step" title="Step 11">Jump to main procedure of kernle, finally we can code with C.</li></ol></div></div><div class="sect1" title="Main Procedure of Kernel"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp112592"></a>Main Procedure of Kernel</h2></div></div></div><li class="step" title="Step 1">Prepare table of process.</li><li class="step" title="Step 2">Run our first process, it is totally another story...</li><li class="step" title="Step 3">Loop, never exit.</li></div><div class="sect1" title="Interrupt Happens While Process Running"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp748200"></a>Interrupt Happens While Process Running</h2></div></div></div><p>Our process is running at level 1,
+			so when interrupt happens, ring 1 change to ring 0,
+			stack switch to sp0 in TSS.</p><img src="res/proc_int.png"><p>So every process need this special area,
+			we define a struct called "stackframe_t".
+			When a process runs,
+			move the end address of the struct to sp0 in TSS.
+			And when interrupt happens, stack swich to
+			end of the "stackframe_t", push ip, cs and so on into it.</p><pre class="screen">
+		
+typedef struct stackframe_s
+{
+    uint32_t gs;
+    uint32_t fs;
+    uint32_t es;
+    uint32_t ds;
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t ebp;
+    uint32_t kernel_esp;
+    uint32_t ebx;
+    uint32_t edx;
+    uint32_t ecx;
+    uint32_t eax;
+    uint32_t retaddr;
+    uint32_t eip;
+    uint32_t cs;
+    uint32_t eflags;
+    uint32_t esp;
+    uint32_t ss;
+}stackframe_t;
+
+		<p>Each process has a stackframe stored in proc_t.</p>
+		
+#define PROC_NAME_MAX 16
+typedef struct proc_s
+{
+    stackframe_t regs;
+    uint16_t ldt_sel;
+    descriptor_t ldts[LDT_SIZE];
+    uint32_t pid;
+    char proc_name[PROC_NAME_MAX];
+}proc_t;
+
+		</pre></div><div class="sect1" title="Back To a Process From Interruption"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="idp2348568"></a>Back To a Process From Interruption</h2></div></div></div><p>Prepare the stakframe, and instruction "iretd" will finish the job.
+			Actually, our first process is running by this way,
+			we prepare the process table, set esp to address of
+			first process's stackframe, and "iretd".</p></div></div></body></html>

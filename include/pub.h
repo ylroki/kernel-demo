@@ -161,5 +161,11 @@ typedef struct tss_s{
 /* 线性地址 → 物理地址 */
 #define vir2phys(seg_base, vir) (uint32_t)(((uint32_t)seg_base) + (uint32_t)(vir))
 
+
+typedef void (*irq_handler)(uint32_t);
+
+extern void clock_handler(uint32_t irq);
+extern void enable_irq(uint32_t irq);
+extern void set_irq_handler(uint32_t irq, irq_handler hander);
 #endif
 

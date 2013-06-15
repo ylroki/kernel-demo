@@ -81,8 +81,15 @@ disp_str:
     push esi
     push edi
 
-    mov esi, [ebp + 8]; address of string
     mov edi, [disp_pos]
+	cmp edi, 4000
+	jb .1
+	mov edi, 0
+	mov [disp_pos], edi
+
+.1
+    mov esi, [ebp + 8]; address of string
+    ;mov edi, [disp_pos]
     mov ah, 0fh
 
 .begin:
@@ -116,5 +123,4 @@ disp_str:
     pop ebx
     pop ebp
     ret
-
 

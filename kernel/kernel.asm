@@ -13,6 +13,7 @@ extern g_exited
 extern g_proc_ready
 extern g_tss
 extern g_k_reenter
+extern g_irq_table
 
 [SECTION .data]
 clock_int_msg db  "^",0
@@ -84,74 +85,15 @@ _start:
     ; init process table
     jmp kernel_main
 
+; return from irq, 
+; if irq is reeneter one, recover the previous irq
+; otherwise, recover the process
 restart:
     mov esp, [g_proc_ready]
     lldt [esp + P_LDT_SEL]
     lea eax, [esp + P_STACKTOP]
     mov dword [g_tss + TSS3_S_SP0], eax
 restart_reenter:
-    pop gs
-    pop fs
-    pop es
-    pop ds
-    popad
-    add esp, 4
-
-    ; first process running
-    iretd
-
-
-%macro  mask_int_func_master    1
-        push    %1
-        call    mask_interrupt_handler
-        add     esp, 4
-        iretd
-%endmacro
-; ---------------------------------
-
-
-
-ALIGN 16
-mask_int_func0:                ; Interrupt routine for irq 0 (the clock).
-    sub esp, 4
-    pushad
-    push ds
-    push es
-    push fs
-    push gs
-    mov dx, ss
-    mov ds, dx
-    mov es, dx
-    
-    ;print
-    inc byte [gs:0]
-
-    mov al, EOI
-    out INT_M_CTL, al
-
-    ;Judge reenter or not
-    inc dword [g_k_reenter]
-    cmp dword [g_k_reenter], 0
-    jne .reenter
-    
-    ;switch to kernel stack
-    mov esp, StackTop
-
-    sti
-
-    push clock_int_msg
-    call disp_str
-    add esp, 4
-
-    call kernel_schedule
-
-    cli
-    ;switch to process
-    mov esp, [g_proc_ready]
-
-    lea eax, [esp + P_STACKTOP]
-    mov dword [g_tss + TSS3_S_SP0], eax
-.reenter
     dec dword [g_k_reenter]
     pop gs
     pop fs
@@ -161,7 +103,68 @@ mask_int_func0:                ; Interrupt routine for irq 0 (the clock).
     add esp, 4
 
     iretd
-        ;mask_int_func_master    0
+
+; interrupt occur, save the reg;
+; if this irq is the only one, which means
+; esp point to process stackframe(not process's stack)
+; we need switch to kernel stack
+; otherwise, this irq may interrupt other irq,
+; stack here is just the kernel stack
+save:
+	pushad
+    push ds
+    push es
+    push fs
+    push gs
+    mov dx, ss
+    mov ds, dx
+    mov es, dx
+
+	mov eax, esp
+    
+    ;Judge reenter or not
+    inc dword [g_k_reenter]
+    cmp dword [g_k_reenter], 0
+    jne .reenter
+    
+    ;switch to kernel stack
+    mov esp, StackTop
+	push restart
+	jmp [eax+RETADR-P_STACKBASE]
+.reenter:
+	push restart_reenter
+	jmp [eax+RETADR-P_STACKBASE]
+
+
+%macro  mask_int_func_master    1
+		call save ; save reg 
+
+		in al, INT_M_CTLMASK
+		or al, (1<<%1)
+		out INT_M_CTLMASK, al; disable this irq
+		mov al, EOI
+		out INT_M_CTL, al
+
+		sti ; enable other irq
+
+        push    %1
+        call    [g_irq_table + 4 * %1]
+		pop ecx
+
+		cli ; disable all irq
+
+		in al, INT_M_CTLMASK
+		and al, ~(1<<%1)
+		out INT_M_CTLMASK, al; enable this irq
+		ret ; jmp to restart or restart_reenter
+%endmacro
+; ---------------------------------
+
+
+
+ALIGN 16
+mask_int_func0:                ; Interrupt routine for irq 0 (the clock).
+		mask_int_func_master    0
         
 ALIGN 16
 mask_int_func1:                ; Interrupt routine for irq 1 (keyboard)

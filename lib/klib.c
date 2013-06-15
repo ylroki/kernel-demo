@@ -14,11 +14,10 @@ void reverse_string(char* string, int len)
     }
 }
 
-char* itoa(char* buffer, int number)
+char* itoa(char* buffer, int number, int base)
 {
     bool_t ge_zero = true;
     int len = 0;
-    int base = 16;
     if (0 > number)
     {
         ge_zero = false;
@@ -53,16 +52,23 @@ char* itoa(char* buffer, int number)
     }
 
     reverse_string(buffer, len);
+	buffer[len] = 0;
 }
 
 void disp_int(int number)
 {
     char str[16] = {0};
-    (void)itoa(str, number);
+    (void)itoa(str, number, 10);
     disp_str(str);
 }
 
-#define DELAY_LOOP 1000000
+void disp_hex(int number)
+{
+    char str[16] = {0};
+    (void)itoa(str, number, 16);
+    disp_str(str);
+}
+#define DELAY_LOOP 100000
 void delay(int time)
 {
     int i, j;

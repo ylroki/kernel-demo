@@ -8,13 +8,16 @@ void process_a();
 void process_b();
 void process_c();
 
+
 proc_func g_func_table[PROC_MAX] = {process_a, process_b, process_c};
 
 int kernel_main()
 {
     disp_str("------\"kernel main begin\"------\n");
 
-    g_k_reenter = -1;
+    g_k_reenter = 0;
+	set_irq_handler(0, clock_handler);
+	enable_irq(0);
 
     proc_t* p_proc  = g_proc_table;
     
@@ -22,7 +25,7 @@ int kernel_main()
     for (idx = 0; idx < PROC_MAX; ++idx)
     {
         p_proc = g_proc_table + idx;
-        p_proc->ldt_sel = SELECTOR_LDT_FIRST + idx<<3;
+        p_proc->ldt_sel = SELECTOR_LDT_FIRST + (idx<<3);
         memcpy(&p_proc->ldts[0], &g_gdt[SELECTOR_KERNEL_CS>>3], sizeof(descriptor_t));
         p_proc->ldts[0].attr1 = DA_C | PRIVILEGE_TASK << 5; // change the DPL
         memcpy(&p_proc->ldts[1], &g_gdt[SELECTOR_KERNEL_DS>>3], sizeof(descriptor_t));

@@ -82,34 +82,50 @@ void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
     disp_str(err_msg[vec_no]);
     disp_str("\n");
     disp_str("CS: ");
-    disp_int(cs);
+    disp_hex(cs);
     disp_str(" IP: ");
-    disp_int(eip);
+    disp_hex(eip);
     disp_str(" Error code: ");
-    disp_int(err_code);
+    disp_hex(err_code);
     disp_str(" Flags: ");
-    disp_int(eflags);
+    disp_hex(eflags);
     disp_str("\n");
 
     return;
 }
 
-void mask_interrupt_handler(int irq)
+void mask_interrupt_handler(uint32_t irq)
 {
-    char str[2] = {0};
-    char quit_str[] = "OS QUIT";
-    str[0] = irq + 'A';
-
     clear_some_lines();
     disp_str("IRQ: ");
     disp_int(irq);
     disp_str("\n");
-    if (1 == irq)
-    {
-        g_exited = 1;
-        disp_str(quit_str);
-    }
+}
 
+void disp_proc_frame(proc_t* proc)
+{
+	disp_str(" proc ptr ");
+	disp_hex(proc);
+	disp_str(" ldt sel ");
+	disp_int(proc->ldt_sel);
+	disp_str(" ");
+
+}
+
+void clock_handler(uint32_t irq)
+{
+	disp_str("*");
+	if (g_k_reenter != 0)
+	{
+		disp_str("!");
+		return;
+	}
+
+	g_proc_ready++;
+	if (g_proc_ready >= g_proc_table + PROC_MAX)
+	{
+		g_proc_ready = g_proc_table;
+	}
 }
 
 void init_8259A()
@@ -123,7 +139,7 @@ void init_8259A()
     out_byte(INT_M_CTLMASK, 0x1);
     out_byte(INT_S_CTLMASK, 0x1);
     /* open clock and keyboard interrupt*/
-    out_byte(INT_M_CTLMASK, 0xFE);
+    out_byte(INT_M_CTLMASK, 0xFF);
     out_byte(INT_S_CTLMASK, 0xFF);
 }
 
@@ -245,7 +261,41 @@ void init_mask_interrupt()
     init_idt_desc(INT_VECTOR_IRQ8 + 7, DA_386IGate,
             mask_int_func7, PRIVILEGE_KRNL);
 
+	uint32_t idx = 0;
+	for (idx = 0; idx < IRQ_MAX; ++idx)
+	{
+		g_irq_table[idx] = mask_interrupt_handler;
+	}
+}
 
+void enable_irq(uint32_t irq)
+{
+	if (irq < 8)	
+	{
+		out_byte(INT_M_CTLMASK, in_byte(INT_M_CTLMASK) & ~(1<<irq));
+	}
+	else
+	{
+		out_byte(INT_S_CTLMASK, in_byte(INT_S_CTLMASK) & ~(1<<irq));
+	}
+}
+
+void disable_irq(uint32_t irq)
+{
+	if (irq < 8)	
+	{
+		out_byte(INT_M_CTLMASK, in_byte(INT_M_CTLMASK)|(1<<irq));
+	}
+	else
+	{
+		out_byte(INT_S_CTLMASK, in_byte(INT_S_CTLMASK)|(1<<irq));
+	}
+}
+
+void set_irq_handler(uint32_t irq, irq_handler handler)
+{
+	disable_irq(irq);
+	g_irq_table[irq] = handler;
 }
 
 uint32_t seg2phys(uint16_t seg)
@@ -284,7 +334,7 @@ void init_protect_mode()
     int idx = 0;
     for (idx = 0; idx < PROC_MAX; ++idx)
     {
-        init_descriptor(&g_gdt[INDEX_LDT_FIRST + idx<<3],
+        init_descriptor(&g_gdt[INDEX_LDT_FIRST + idx],
             vir2phys(seg2phys(SELECTOR_KERNEL_DS), g_proc_table[idx].ldts),
             LDT_SIZE * sizeof(descriptor_t) - 1,
             DA_LDT);

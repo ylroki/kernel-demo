@@ -8,6 +8,7 @@ descriptor_t g_gdt[GDT_SIZE];
 
 uint8_t g_idt_ptr[6];
 gate_t g_idt[IDT_SIZE];
+irq_handler g_irq_table[IRQ_MAX];
 
 uint8_t g_exited;
 

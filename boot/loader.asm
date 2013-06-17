@@ -32,7 +32,7 @@ LABEL_START:
     mov ss, ax
     mov sp, BaseOfStack
 
-    call Clear
+    ;call Clear
     mov dh, 0
     call DisplayString
 
@@ -169,10 +169,10 @@ LABEL_LOADED:
 ; CX Length of string
 ; DH Line
 MessageLength equ 9
-LoadMessage: db "Loading  "
-Message1 db "Ready.   "
+LoadMessage: db "Loading K"
+Message1 db "Ready K  "
 Message2 db "No Kernel"
-Message3 db "Find     "
+Message3 db "Find K   "
 
 DisplayString:
     push es
@@ -185,7 +185,7 @@ DisplayString:
     mov cx, MessageLength
     mov ax, 01301h
     mov bx, 0007h
-    mov dl, 0
+	mov dl, 12
     int 10h
     pop es
     ret

@@ -24,8 +24,8 @@ P_LDT       equ P_LDT_SEL   + 4
 
 TSS3_S_SP0  equ 4
 
-; 以下选择子值必须与 protect.h 中保持一致!!!
-SELECTOR_FLAT_C     equ     0x08    ; LOADER 里面已经确定了的.
+; select below should be the same as protect.h
+SELECTOR_FLAT_C     equ     0x08    ; same as loader
 SELECTOR_TSS        equ     0x20    ; TSS
 SELECTOR_KERNEL_CS  equ     SELECTOR_FLAT_C
 

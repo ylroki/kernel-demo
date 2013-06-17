@@ -10,8 +10,8 @@ LD = ld
 KERNEL_ENTRY = 0x30400
 LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 
-OBJS = obj/kernel.o obj/string.o obj/start.o obj/protect.o obj/kliba.o obj/klib.o\
-	obj/global.o obj/main.o
+OBJS = obj/kernel.o obj/string.o obj/protect.o obj/kliba.o obj/klib.o\
+	obj/process.o obj/main.o
 
 DOCBOOK_XSL = /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl
 
@@ -49,13 +49,10 @@ obj/klib.o: lib/klib.c
 obj/kernel.o: kernel/kernel.asm
 	${ASM} ${ASM_KERNEL_FLAG} -o $@ $<
 
-obj/start.o: kernel/start.c
-	${CC} ${C_FLAG} -o $@ $<
-
 obj/protect.o: kernel/protect.c
 	${CC} ${C_FLAG} -o $@ $<
 
-obj/global.o: kernel/global.c
+obj/process.o: kernel/process.c
 	${CC} ${C_FLAG} -o $@ $<
 
 obj/main.o: kernel/main.c

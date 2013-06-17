@@ -1,11 +1,10 @@
 %include "const.inc"
 
-extern cstart
+extern kernel_init
 extern exception_handler
 extern mask_interrupt_handler
 extern disp_str
 extern kernel_main
-extern kernel_schedule
 
 extern g_gdt_ptr
 extern g_idt_ptr
@@ -71,7 +70,7 @@ _start:
 
     ; prepare new GDT
     ; prepare protect mod
-    call cstart
+    call kernel_init
 
     ; load gdt and idt(interrupt descriptor table)
     lgdt [g_gdt_ptr]

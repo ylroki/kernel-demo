@@ -1,5 +1,4 @@
 #include "pub.h"
-#include "string.h"
 
 
 void reverse_string(char* string, int len)

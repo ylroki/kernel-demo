@@ -1,45 +1,21 @@
 #include "pub.h"
-#include "string.h"
-#include "global.h"
+
+/*********************************/
+
+/*global var*/
+uint8_t g_gdt_ptr[6];
+descriptor_t g_gdt[GDT_SIZE];
+
+uint8_t g_idt_ptr[6];
+gate_t g_idt[IDT_SIZE];
+irq_handler g_irq_table[IRQ_MAX];
 
 
-typedef void (*int_handler)();
+tss_t g_tss;
 
-/* exception function */
-void    divide_error();
-void    single_step_exception();
-void    nmi();
-void    breakpoint_exception();
-void    overflow();
-void    bounds_check();
-void    inval_opcode();
-void    copr_not_available();
-void    double_fault();
-void    copr_seg_overrun();
-void    inval_tss();
-void    segment_not_present();
-void    stack_exception();
-void    general_protection();
-void    page_fault();
-void    copr_error();
+int g_k_reenter;
 
-void mask_int_func0();
-void mask_int_func1();
-void mask_int_func2();
-void mask_int_func3();
-void mask_int_func4();
-void mask_int_func5();
-void mask_int_func6();
-void mask_int_func7();
-void mask_int_func8();
-void mask_int_func9();
-void mask_int_func10();
-void mask_int_func11();
-void mask_int_func12();
-void mask_int_func13();
-void mask_int_func14();
-void mask_int_func15();
-
+/*******************************/
 void clear_some_lines()
 {
     disp_pos = 0;
@@ -102,16 +78,6 @@ void mask_interrupt_handler(uint32_t irq)
     disp_str("\n");
 }
 
-void disp_proc_frame(proc_t* proc)
-{
-	disp_str(" proc ptr ");
-	disp_hex(proc);
-	disp_str(" ldt sel ");
-	disp_int(proc->ldt_sel);
-	disp_str(" ");
-
-}
-
 void clock_handler(uint32_t irq)
 {
 	disp_str("*");
@@ -121,11 +87,7 @@ void clock_handler(uint32_t irq)
 		return;
 	}
 
-	g_proc_ready++;
-	if (g_proc_ready >= g_proc_table + PROC_MAX)
-	{
-		g_proc_ready = g_proc_table;
-	}
+	kernel_schedule();
 }
 
 void init_8259A()
@@ -138,7 +100,6 @@ void init_8259A()
     out_byte(INT_S_CTLMASK, 0x2);
     out_byte(INT_M_CTLMASK, 0x1);
     out_byte(INT_S_CTLMASK, 0x1);
-    /* open clock and keyboard interrupt*/
     out_byte(INT_M_CTLMASK, 0xFF);
     out_byte(INT_S_CTLMASK, 0xFF);
 }
@@ -159,7 +120,6 @@ void init_idt_desc(unsigned char vector, uint8_t desc_type,
 
 void init_exception()
 {
-    /* 异常中断*/
     init_idt_desc(INT_VECTOR_DIVIDE,    DA_386IGate,
               divide_error,     PRIVILEGE_KRNL);
 
@@ -328,9 +288,9 @@ void init_protect_mode()
             vir2phys(seg2phys(SELECTOR_KERNEL_DS), &g_tss),
             sizeof(g_tss) - 1,
             DA_386TSS);
-    g_tss.iobase = sizeof(g_tss); /* 没有I/O许可位图 */
+    g_tss.iobase = sizeof(g_tss); 
 
-    /* 填充 GDT 中进程的 LDT 的描述符 */
+    /* init ldt  in gdt*/
     int idx = 0;
     for (idx = 0; idx < PROC_MAX; ++idx)
     {
@@ -341,4 +301,23 @@ void init_protect_mode()
     }
 }
 
+void kernel_init()
+{
+    uint16_t* p_gdt_limit = (uint16_t*)(&g_gdt_ptr[0]);
+    uint32_t* p_gdt_base = (uint32_t*)(&g_gdt_ptr[2]);
+    uint16_t* p_idt_limit = (uint16_t*)(&g_idt_ptr[0]);
+    uint32_t* p_idt_base = (uint32_t*)(&g_idt_ptr[2]);
+
+    memcpy(g_gdt, (void*)(*p_gdt_base), *p_gdt_limit + 1);
+
+    *p_gdt_base = (uint32_t)g_gdt;
+    *p_gdt_limit = GDT_SIZE * sizeof(descriptor_t) - 1;
+    *p_idt_base = (uint32_t)g_idt;
+    *p_idt_limit = IDT_SIZE * sizeof(gate_t) - 1;
+
+    init_protect_mode();
+
+    disp_str("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nkernel init\n");
+    return ;
+}
 

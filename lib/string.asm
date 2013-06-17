@@ -83,11 +83,14 @@ disp_str:
 
     mov edi, [disp_pos]
 	cmp edi, 4000
-	jb .1
-	mov edi, 0
-	mov [disp_pos], edi
+	jb .notfull
+	mov edi, 3998
+	mov ah, 64 
+	mov al, 64 
+    mov [gs:edi], ax
+	jmp .end
 
-.1
+.notfull
     mov esi, [ebp + 8]; address of string
     ;mov edi, [disp_pos]
     mov ah, 0fh

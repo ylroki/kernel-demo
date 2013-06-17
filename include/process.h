@@ -1,7 +1,9 @@
-#ifndef __INCLUDE_PROC_H__
-#define __INCLUDE_PROC_H__
-#include "pub.h"
+#ifndef __INCLUDE_PROCESS_H__
+#define __INCLUDE_PROCESS_H__
+#include "type.h"
 
+#define LDT_SIZE 2 /* ldt used by each process*/
+#define PROC_NAME_MAX 16
 
 typedef struct stackframe_s
 {
@@ -25,7 +27,6 @@ typedef struct stackframe_s
     uint32_t ss;
 }stackframe_t;
 
-#define PROC_NAME_MAX 16
 typedef struct proc_s
 {
     stackframe_t regs;
@@ -37,5 +38,16 @@ typedef struct proc_s
 
 
 typedef void (*proc_func)();
+
+#define PROC_MAX 3
+#define STACK_SIZE 1024 
+extern uint8_t g_exited;
+
+extern proc_t* g_proc_ready;
+extern proc_t g_proc_table[PROC_MAX];
+
+extern char g_task_stack[STACK_SIZE*PROC_MAX];
+
+extern void kernel_schedule();
 
 #endif

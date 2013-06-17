@@ -117,9 +117,9 @@ LABEL_LOADED:
 ; DH Line
 MessageLength equ 9
 BootMessage: db "Booting  "
-Message1 db "Ready.   "
+Message1 db "Ready B  "
 Message2 db "No Loader"
-Message3 db "Find     "
+Message3 db "Find  L  "
 
 DisplayString:
     push es
@@ -132,7 +132,7 @@ DisplayString:
     mov cx, MessageLength
     mov ax, 01301h
     mov bx, 0007h
-    mov dl, 0
+	mov dl, 0
     int 10h
     pop es
     ret

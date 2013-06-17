@@ -146,7 +146,8 @@
 		<imageobject><imagedata fileref="res/selector.png"/></imageobject>
 		<para>It is a 16-Bits structurre.
 			Because the size of Descriptor is 8, so the low 3-bits of Selector
-			can be used as attribution.</para>
+			can be used as attribution.
+			TI decides local or global, and RPL take effect in privilege level.</para>
 		</sect2>
 
 	</sect1>
@@ -156,7 +157,7 @@
 			While a low level task access to high level segment, it causes a error.</para>
 		<para>But with different types of segment, the privilege may be different.
 			In previous section, we can see RPL in Selector and DPL in Descriptor,
-			With CPL(store in 0th-bit and 1th-bit in cs and ss),
+			With CPL(store in 0th-bit and 1th-bit in cs and ss, which means cs's RPL),
 			these will take effect.</para>
 			<informaltable frame="all">
 				<tgroup cols="2">
@@ -172,24 +173,26 @@
 				<row><entry>Call Gate</entry>
 					<entry>max(CPL, RPL) &le; DPL </entry>
 				</row>
-				<row><entry>IUnconforming Code Segment</entry>
+				<row><entry>Nonconforming Code Segment</entry>
 					<entry>CPL = DPL and RPL &le; DPL</entry>
 				</row>
 				<row><entry>Conforming Code Segment</entry>
 					<entry>CPL &ge; DPL</entry>
 				</row>
-				<row><entry>Inconforming Code Segment(Use Call Gate and "call")</entry>
+				<row><entry>Nonconforming Code Segment(Use Call Gate and "call")</entry>
 					<entry>CPL &ge; DPL</entry>
 				</row>
-				<row><entry>Inconforming Code Segment(Use Call Gate and "jmp")</entry>
+				<row><entry>Nonconforming Code Segment(Use Call Gate and "jmp")</entry>
 					<entry>CPL = DPL</entry>
 				</row>
 				</tbody>
 				</tgroup>
 			</informaltable>
+			<para>When change to different nonconforming code segment,
+				CPL will change, but conforming code segment keep the CPL.</para>
 
 		<sect2><title>Call Gate</title>
-		<para>Low level can use call gate to access high level Inconforming code segment.
+		<para>Low level can use call gate to access high level Nonconforming code segment.
 			What is Call Gate?</para>
 		<imageobject><imagedata fileref="res/gate.png"/></imageobject>
 		<para>Call gate is a "Gate" to access destination code segment.
@@ -215,7 +218,8 @@
 		<sect2><title>Jump From High Level To Low</title>
 		<para>Here is the "ret" procedure of CPU</para>
 		<procedure>
-			<step>Check RPL in CS if privilege level should change.</step>
+			<step>Check RPL in CS(both current CS and which stored in stack)
+				if privilege level should change.</step>
 			<step>Load CS and EIP of caller.</step>
 			<step>Accorind to argument of "ret", add esp to skip parameters.</step>
 			<step>Load SS and ESP.</step>

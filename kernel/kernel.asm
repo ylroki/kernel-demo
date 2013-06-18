@@ -236,7 +236,7 @@ mask_int_func15:                ; Interrupt routine for irq 15
         
 
 
-; 中断和异常 -- 异常
+
 divide_error:
     push    0xFFFFFFFF  ; no err code
     push    0       ; vector_no = 0
@@ -298,5 +298,5 @@ copr_error:
 
 exception:
     call    exception_handler
-    add esp, 4*2    ; 让栈顶指向 EIP，堆栈中从顶向下依次是：EIP、CS、EFLAGS
+    add esp, 4*2    
     iretd

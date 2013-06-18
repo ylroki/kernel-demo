@@ -10,6 +10,14 @@ uint8_t g_idt_ptr[6];
 gate_t g_idt[IDT_SIZE];
 irq_handler g_irq_table[IRQ_MAX];
 
+void sys_test_inc_handler();
+void sys_test_dec_handler();
+int g_test_val = 0;
+syscall_handler g_syscall_table[SYSCALL_MAX] = 
+{
+	sys_test_inc_handler,
+	sys_test_dec_handler
+};
 
 tss_t g_tss;
 
@@ -80,14 +88,28 @@ void mask_interrupt_handler(uint32_t irq)
 
 void clock_handler(uint32_t irq)
 {
-	disp_str("*");
+	//disp_str("*");
 	if (g_k_reenter != 0)
 	{
-		disp_str("!");
+		//disp_str("!");
 		return;
 	}
 
 	kernel_schedule();
+}
+
+void sys_test_inc_handler()
+{
+	int tmp = g_test_val;
+	++tmp;
+	g_test_val = tmp;
+}
+
+void sys_test_dec_handler()
+{
+	int tmp = g_test_val;
+	--tmp;
+	g_test_val = tmp;
 }
 
 void init_8259A()
@@ -316,6 +338,11 @@ void kernel_init()
     *p_idt_limit = IDT_SIZE * sizeof(gate_t) - 1;
 
     init_protect_mode();
+
+	/* init syscall*/
+    init_idt_desc(INT_VECTOR_SYSCALL, DA_386IGate,
+            syscall, PRIVILEGE_USER);
+
 
     disp_str("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nkernel init\n");
     return ;

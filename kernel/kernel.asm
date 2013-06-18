@@ -13,6 +13,7 @@ extern g_proc_ready
 extern g_tss
 extern g_k_reenter
 extern g_irq_table
+extern g_syscall_table
 
 [SECTION .data]
 clock_int_msg db  "^",0
@@ -57,6 +58,8 @@ global  mask_int_func12
 global  mask_int_func13
 global  mask_int_func14
 global  mask_int_func15
+
+global syscall
 
 global restart
 
@@ -119,7 +122,7 @@ save:
     mov ds, dx
     mov es, dx
 
-	mov eax, esp
+	mov esi, esp
     
     ;Judge reenter or not
     inc dword [g_k_reenter]
@@ -129,10 +132,10 @@ save:
     ;switch to kernel stack
     mov esp, StackTop
 	push restart
-	jmp [eax+RETADR-P_STACKBASE]
+	jmp [esi+RETADR-P_STACKBASE]
 .reenter:
 	push restart_reenter
-	jmp [eax+RETADR-P_STACKBASE]
+	jmp [esi+RETADR-P_STACKBASE]
 
 
 %macro  mask_int_func_master    1
@@ -300,3 +303,27 @@ exception:
     call    exception_handler
     add esp, 4*2    
     iretd
+
+;------------------------------------------
+syscall:
+	call save ; save reg 
+	sti ; enable other irq
+
+	call    [g_syscall_table + 4 * eax]
+	mov  [esi + EAXREG - P_STACKBASE], eax ; eax store return value of call
+
+	cli ; disable all irq
+
+	ret ; jmp to restart or restart_reenter
+
+global sys_test_inc
+sys_test_inc:
+	mov eax, 0
+	int 0x80
+	ret
+
+global sys_test_dec
+sys_test_dec:
+	mov eax, 1
+	int 0x80
+	ret

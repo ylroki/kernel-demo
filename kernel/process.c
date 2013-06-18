@@ -67,18 +67,20 @@ void kernel_schedule()
 /**************************************/
 void process_a()
 {
+	sys_test_inc();
+	disp_int(g_test_val);
     while (1)
     {
-        disp_str("A");
         delay(1);
     }
 }
 
 void process_b()
 {
+	sys_test_dec();
+	disp_int(g_test_val);
     while (1)
     {
-        disp_str("B");
         delay(1);
     }
 }
@@ -87,7 +89,6 @@ void process_c()
 {
     while (1)
     {
-        disp_str("C");
         delay(1);
     }
 }

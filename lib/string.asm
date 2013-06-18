@@ -84,7 +84,7 @@ disp_str:
     mov edi, [disp_pos]
 	cmp edi, 4000
 	jb .notfull
-	mov edi, 3998
+	mov edi, 3996
 	mov ah, 64 
 	mov al, 64 
     mov [gs:edi], ax

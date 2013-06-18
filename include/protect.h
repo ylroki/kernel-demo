@@ -21,9 +21,6 @@
 #define INT_S_CTL 0xA0
 #define INT_S_CTLMASK 0xA1
 
-#define INT_VECTOR_IRQ0 0x20
-#define INT_VECTOR_IRQ8 0x28
-
 
 /* attribute of selector*/
 #define SA_RPL_MASK  0xfffc
@@ -103,6 +100,11 @@
 #define INT_VECTOR_PAGE_FAULT       0xE
 #define INT_VECTOR_COPROC_ERR       0x10
 
+#define INT_VECTOR_IRQ0 0x20
+#define INT_VECTOR_IRQ8 0x28
+#define INT_VECTOR_SYSCALL 0x80 /* system call*/
+
+
 
 
 /*linner addr to physical addr*/
@@ -111,6 +113,7 @@
 #define GDT_SIZE 128
 #define IDT_SIZE 256
 #define IRQ_MAX 16
+#define SYSCALL_MAX 128
 
 
 
@@ -171,6 +174,7 @@ typedef struct tss_s{
 
 typedef void (*irq_handler)(uint32_t);
 typedef void (*int_handler)();
+typedef void (*syscall_handler)();
 
 
 /*****************************************************/
@@ -184,6 +188,9 @@ extern uint8_t g_idt_ptr[6];
 extern gate_t g_idt[IDT_SIZE];
 
 extern irq_handler g_irq_table[IRQ_MAX];
+
+extern syscall_handler g_syscall_table[SYSCALL_MAX];
+extern int g_test_val;
 extern tss_t g_tss;
 
 extern int g_k_reenter;/*irq reenter flag*/
@@ -195,40 +202,42 @@ extern void set_irq_handler(uint32_t irq, irq_handler hander);
 
 
 /* exception function */
-void    divide_error();
-void    single_step_exception();
-void    nmi();
-void    breakpoint_exception();
-void    overflow();
-void    bounds_check();
-void    inval_opcode();
-void    copr_not_available();
-void    double_fault();
-void    copr_seg_overrun();
-void    inval_tss();
-void    segment_not_present();
-void    stack_exception();
-void    general_protection();
-void    page_fault();
-void    copr_error();
+extern void    divide_error();
+extern void    single_step_exception();
+extern void    nmi();
+extern void    breakpoint_exception();
+extern void    overflow();
+extern void    bounds_check();
+extern void    inval_opcode();
+extern void    copr_not_available();
+extern void    double_fault();
+extern void    copr_seg_overrun();
+extern void    inval_tss();
+extern void    segment_not_present();
+extern void    stack_exception();
+extern void    general_protection();
+extern void    page_fault();
+extern void    copr_error();
 
-void mask_int_func0();
-void mask_int_func1();
-void mask_int_func2();
-void mask_int_func3();
-void mask_int_func4();
-void mask_int_func5();
-void mask_int_func6();
-void mask_int_func7();
-void mask_int_func8();
-void mask_int_func9();
-void mask_int_func10();
-void mask_int_func11();
-void mask_int_func12();
-void mask_int_func13();
-void mask_int_func14();
-void mask_int_func15();
+extern void mask_int_func0();
+extern void mask_int_func1();
+extern void mask_int_func2();
+extern void mask_int_func3();
+extern void mask_int_func4();
+extern void mask_int_func5();
+extern void mask_int_func6();
+extern void mask_int_func7();
+extern void mask_int_func8();
+extern void mask_int_func9();
+extern void mask_int_func10();
+extern void mask_int_func11();
+extern void mask_int_func12();
+extern void mask_int_func13();
+extern void mask_int_func14();
+extern void mask_int_func15();
 
-
+extern void syscall();
+extern void sys_test_inc();
+extern void sys_test_dec();
 
 #endif

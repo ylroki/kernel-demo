@@ -19,6 +19,7 @@ all: build/boot.bin build/loader.bin build/kernel.bin
 	dd if=build/boot.bin of=image/my_os.img bs=512 count=1 conv=notrunc
 	sudo mount image/my_os.img /mnt/floppy
 	sudo cp build/loader.bin build/kernel.bin /mnt/floppy
+	sleep 1
 	sudo umount /mnt/floppy
 
 clean:

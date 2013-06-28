@@ -51,6 +51,10 @@ void run_first_process()
 	set_irq_handler(0, clock_handler);
 	enable_irq(0);
 
+	/* actibe keyboard irq*/
+	set_irq_handler(1, keyboard_handler);
+	enable_irq(1);
+
 	init_process_table();
 
 	restart();
@@ -67,8 +71,6 @@ void kernel_schedule()
 /**************************************/
 void process_a()
 {
-	sys_test_inc();
-	disp_int(g_test_val);
     while (1)
     {
         delay(1);
@@ -77,8 +79,6 @@ void process_a()
 
 void process_b()
 {
-	sys_test_dec();
-	disp_int(g_test_val);
     while (1)
     {
         delay(1);

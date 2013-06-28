@@ -44,6 +44,12 @@ char* itoa(char* buffer, int number, int base)
         ++len;
     }
 
+	if (16 == base)
+	{
+		buffer[len++] = 'x';
+		buffer[len++] = '0';
+	}
+
     if (false == ge_zero)
     {
         buffer[len] = '-';

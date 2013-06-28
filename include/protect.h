@@ -195,9 +195,11 @@ extern tss_t g_tss;
 
 extern int g_k_reenter;/*irq reenter flag*/
 
-
+/* interrupt request*/
 extern void clock_handler(uint32_t irq);
+extern void keyboard_handler(uint32_t irq);
 extern void enable_irq(uint32_t irq);
+extern void disable_irq(uint32_t irq);
 extern void set_irq_handler(uint32_t irq, irq_handler hander);
 
 
@@ -219,6 +221,7 @@ extern void    general_protection();
 extern void    page_fault();
 extern void    copr_error();
 
+/* maskable interrupt*/
 extern void mask_int_func0();
 extern void mask_int_func1();
 extern void mask_int_func2();
@@ -236,6 +239,7 @@ extern void mask_int_func13();
 extern void mask_int_func14();
 extern void mask_int_func15();
 
+/* system call*/
 extern void syscall();
 extern void sys_test_inc();
 extern void sys_test_dec();

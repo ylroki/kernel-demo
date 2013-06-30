@@ -11,11 +11,13 @@ KERNEL_ENTRY = 0x30400
 LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 
 OBJS = obj/kernel.o obj/string.o obj/protect.o obj/kliba.o obj/klib.o\
-	obj/process.o obj/main.o
+	obj/process.o obj/main.o obj/keyboard.o
 
 DOCBOOK_XSL = /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl
 
 all: build/boot.bin build/loader.bin build/kernel.bin
+
+install:
 	dd if=build/boot.bin of=image/my_os.img bs=512 count=1 conv=notrunc
 	sudo mount image/my_os.img /mnt/floppy
 	sudo cp build/loader.bin build/kernel.bin /mnt/floppy
@@ -26,7 +28,7 @@ clean:
 	rm obj/*.o
 	rm build/*.bin
 	sudo mount image/my_os.img /mnt/floppy
-	sudo rm /mnt/floppy/*
+	sudo rm /mnt/floppy/*||sudo umount /mnt/floppy
 	sudo umount /mnt/floppy
 
 # build boot
@@ -57,6 +59,9 @@ obj/process.o: kernel/process.c
 	${CC} ${C_FLAG} -o $@ $<
 
 obj/main.o: kernel/main.c
+	${CC} ${C_FLAG} -o $@ $<
+
+obj/keyboard.o: kernel/keyboard.c
 	${CC} ${C_FLAG} -o $@ $<
 
 build/kernel.bin: ${OBJS}

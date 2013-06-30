@@ -52,9 +52,8 @@ void run_first_process()
 	enable_irq(0);
 
 	/* actibe keyboard irq*/
-	set_irq_handler(1, keyboard_handler);
-	enable_irq(1);
-
+	keyboard_irq_init();
+	
 	init_process_table();
 
 	restart();
@@ -73,7 +72,8 @@ void process_a()
 {
     while (1)
     {
-        delay(1);
+		keyboard_read();
+		delay(1);
     }
 }
 

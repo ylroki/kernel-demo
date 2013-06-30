@@ -81,3 +81,41 @@ void delay(int time)
         for (j = 0; j < DELAY_LOOP; ++j)
         {}
 }
+
+/******************************/
+void char_queue_init(char_queue_t* q)
+{
+	memset(q->buf, 0, sizeof(q->buf));
+	q->head = 0;
+	q->tail = 0;
+}
+
+uint32_t char_queue_count(char_queue_t* q)
+{
+	return (q->tail - q->head + CHAR_QUEUE_BUF_MAX)%CHAR_QUEUE_BUF_MAX;
+}
+
+void char_queue_push(char_queue_t* q, char c)
+{
+	q->buf[q->tail] = c;
+	++q->tail;
+	if (CHAR_QUEUE_BUF_MAX-1 == q->tail)
+	{
+		q->tail = 0;
+	}
+}
+
+char char_queue_pop(char_queue_t* q)
+{
+	if (0 == char_queue_count(q))
+	{
+		return (char)0;
+	}
+	char c = q->buf[q->head];
+	++q->head;
+	if (CHAR_QUEUE_BUF_MAX-1 == q->head)
+	{
+		q->head = 0;
+	}
+	return c;
+}

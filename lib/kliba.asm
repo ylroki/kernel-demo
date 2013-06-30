@@ -21,3 +21,13 @@ in_byte:
     nop
     nop
     ret
+
+global enable_interrupt
+enable_interrupt:
+	cli
+	ret
+
+global disable_interrupt
+disable_interrupt:
+	sti
+	ret

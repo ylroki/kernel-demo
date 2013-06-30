@@ -23,53 +23,6 @@ tss_t g_tss;
 
 int g_k_reenter;
 
-char *g_key_map[]= 
-{
-	"ESC",
-	"1","2","3","4","5","6","7","8","9","0","-","=",
-	"bs", /* bs*/
-	"tab", /* tab*/
-
-	"q","w","e", "r","t","y","u","i","o","p","[","]",
-	"*", /**/
-	"ctrl", /*ctrl*/
-	"a","s","d","f","g","h","j","k","l",";","\'",
-	"`",
-	"l shift", /*L shift*/
-	"\\",
-	"z","x","c","v","b","n","m",",",".","/",
-	"r shift", /*R shift*/
-	"print screen", /*print screen*/
-	"alt", /*alt*/
-	" ", /*space*/
-	"caps", /*caps*/
-	"f1", /*f1*/
-	"f2", /*f2*/
-	"f3", /*f3*/
-	"f4", /*f4*/
-	"f5", /*f5*/
-	"f6", /*f6*/
-	"f7", /*f7*/
-	"f8", /*f8*/
-	"f9", /*f9*/
-	"f10", /*f10*/
-	"num", /*num*/
-	"scroll", /*scroll*/
-	"home", /*home*/
-	"up", /*up*/
-	"page up", /*page up*/
-	"-", /*-*/
-	"left", /*left*/
-	"center", /*center*/
-	"right", /*right*/
-	"+", /*+*/
-	"end", /*end*/
-	"down", /*down*/
-	"page down", /*page down*/
-	"ins", /*ins*/
-	"del", /*del*/
-};
-
 /*******************************/
 void clear_some_lines()
 {
@@ -142,23 +95,6 @@ void clock_handler(uint32_t irq)
 	}
 
 	kernel_schedule();
-}
-
-void keyboard_handler(uint32_t irq)
-{
-	//disp_str("k");
-	uint8_t scan_code = in_byte(0x60);
-	bool_t make_flag = (scan_code&0x80) == 0 ? 1 : 0;
-	//disp_hex(scan_code);
-	if (true == make_flag)
-	{
-		disp_str(g_key_map[scan_code-1]);
-	}
-	
-	if (g_k_reenter != 0)
-	{
-		return;
-	}
 }
 
 void sys_test_inc_handler()

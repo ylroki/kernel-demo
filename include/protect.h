@@ -197,7 +197,11 @@ extern int g_k_reenter;/*irq reenter flag*/
 
 /* interrupt request*/
 extern void clock_handler(uint32_t irq);
+
 extern void keyboard_handler(uint32_t irq);
+extern void keyboard_read();
+extern void keyboard_irq_init();
+
 extern void enable_irq(uint32_t irq);
 extern void disable_irq(uint32_t irq);
 extern void set_irq_handler(uint32_t irq, irq_handler hander);

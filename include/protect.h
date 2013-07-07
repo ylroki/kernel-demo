@@ -115,7 +115,7 @@
 #define IRQ_MAX 16
 #define SYSCALL_MAX 128
 
-
+#define PROTECT_DISPLAY_LINE_END 5
 
 
 /*************************************************/
@@ -201,6 +201,7 @@ extern void clock_handler(uint32_t irq);
 extern void keyboard_handler(uint32_t irq);
 extern void keyboard_read();
 extern void keyboard_irq_init();
+extern void key_state_display(uint32_t line);
 
 extern void enable_irq(uint32_t irq);
 extern void disable_irq(uint32_t irq);

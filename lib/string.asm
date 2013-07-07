@@ -71,8 +71,14 @@ memset:
 ;--------------------------
 global disp_str
 global disp_pos
+global disp_char_per_line
+global disp_pos_per_line
+global disp_line_limit
 
 disp_pos dd 0
+disp_char_per_line dd 80
+disp_pos_per_line dd 160
+disp_line_limit dd 25
 
 disp_str:
     push ebp

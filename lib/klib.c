@@ -73,7 +73,24 @@ void disp_hex(int number)
     (void)itoa(str, number, 16);
     disp_str(str);
 }
-#define DELAY_LOOP 100000
+
+void clear_some_lines(uint32_t start, uint32_t cnt)
+{
+    int i = 0;
+	uint32_t save_pos = disp_pos;
+
+	if (disp_line_limit - start < cnt)
+		cnt = disp_line_limit - start;
+
+    disp_pos = start*disp_pos_per_line;
+    for (i = 0; i < disp_char_per_line * cnt; ++i)
+    {
+        disp_str(" ");
+    }
+    disp_pos = save_pos;
+}
+
+#define DELAY_LOOP 1000
 void delay(int time)
 {
     int i, j;

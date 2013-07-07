@@ -7,6 +7,7 @@
 #define SCAN_CODE_L_CTRL 0x1d
 #define SCAN_CODE_L_SHIFT 0x2a
 #define SCAN_CODE_R_SHIFT 0x36
+#define SCAN_CODE_KP_MUL 0x37
 #define SCAN_CODE_L_ALT 0x38
 #define SCAN_CODE_CAPS_LOCK 0x3a
 #define SCAN_CODE_F1 0x3b
@@ -22,19 +23,34 @@
 #define SCAN_CODE_NUM_LOCK 0x45
 #define SCAN_CODE_SCROLL_LOCK 0x46
 #define SCAN_CODE_HOME 0x47
+#define SCAN_CODE_KP7 0x47
 #define SCAN_CODE_UP 0x48
+#define SCAN_CODE_KP8 0x48
 #define SCAN_CODE_PAGEUP 0x49
-#define SCAN_CODE_PAD_MINUS 0x4a
+#define SCAN_CODE_KP9 0x49
+#define SCAN_CODE_KP_MINUS 0x4a
 #define SCAN_CODE_LEFT 0x4b
+#define SCAN_CODE_KP4 0x4b
 #define SCAN_CODE_MID 0x4c
+#define SCAN_CODE_KP5 0x4c
 #define SCAN_CODE_RIGHT 0x4d
-#define SCAN_CODE_PAD_PLUS 0x4e
+#define SCAN_CODE_KP6 0x4d
+#define SCAN_CODE_KP_PLUS 0x4e
 #define SCAN_CODE_END 0x4f
+#define SCAN_CODE_KP1 0x4f
 #define SCAN_CODE_DOWN 0x50
+#define SCAN_CODE_KP2 0x50
 #define SCAN_CODE_PAGEDOWN 0x51
+#define SCAN_CODE_KP3 0x51
 #define SCAN_CODE_INSERT 0x52
+#define SCAN_CODE_KP0 0x52
 #define SCAN_CODE_DELETE 0x53
-#define SCAN_CODE_ENTER 0x54
+#define SCAN_CODE_KP_DOT 0x53
+#define SCAN_CODE_F11 0x57
+#define SCAN_CODE_F12 0x58
+
+#define KEY_PAD_START 0x47
+#define KEY_PAD_END 0x53
 
 char *g_scan_code_map[]= 
 {
@@ -93,7 +109,7 @@ char *g_scan_code_map[]=
 	".",
 	"/",
 	"r shift", /*R shift*/
-	"*", /*print screen*/
+	"*", /*kp **/
 	"alt", /*alt*/
 	" ", /*space*/
 	"caps", /*caps*/
@@ -109,20 +125,20 @@ char *g_scan_code_map[]=
 	"f10", /*f10*/
 	"num", /*num*/
 	"scroll", /*scroll*/
-	"home", /*home*/
-	"up", /*up*/
-	"page up", /*page up*/
+	"7", /*kp*/
+	"8", /*kp*/
+	"9", /*kp*/
 	"-", /*-*/
-	"left", /*left*/
-	"center", /*center*/
-	"right", /*right*/
+	"4", /*kp*/
+	"5", /*p*/
+	"6", /*kp*/
 	"+", /*+*/
-	"end", /*end*/
-	"down", /*down*/
-	"page down", /*page down*/
-	"ins", /*ins*/
-	"del", /*del*/
-	"enter", /*0x54*/
+	"1", /*kp*/
+	"2", /*kp*/
+	"3", /*kp*/
+	"0", /*kp*/
+	".", /*kp*/
+	"none", /*0x54*/
 	"none",
 	"none",
 	"f11",
@@ -237,24 +253,23 @@ char *g_scan_code_map_with_shift[]=
 	"f6", /*f6*/
 	"f7", /*f7*/
 	"f8", /*f8*/
-	"f9", /*f9*/
 	"f10", /*f10*/
 	"num", /*num*/
 	"scroll", /*scroll*/
-	"home", /*home*/
-	"up", /*up*/
-	"page up", /*page up*/
-	"-", /*-*/
-	"left", /*left*/
-	"center", /*center*/
-	"right", /*right*/
-	"+", /*+*/
-	"end", /*end*/
-	"down", /*down*/
-	"page down", /*page down*/
-	"ins", /*ins*/
-	"del", /*del*/
-	"enter", /*0x54*/
+	"7",/*kp*/ 
+	"8", 
+	"9", 
+	"-", 
+	"4", 
+	"5", 
+	"6", 
+	"+", 
+	"1", 
+	"2", 
+	"3", 
+	"0", 
+	".", /*kp*/
+	"none", /*0x54*/
 	"none",
 	"none",
 	"f11",
@@ -302,6 +317,43 @@ char *g_scan_code_map_with_shift[]=
 
 
 char_queue_t g_keyboard_buf;
+bool_t g_ctrl_pushed = false;
+bool_t g_shift_pushed = false;
+bool_t g_alt_pushed = false;
+bool_t g_caps_enable = false;
+bool_t g_num_enable = false;
+bool_t g_scroll_enable = false;
+
+void key_state_display(uint32_t line)
+{
+	uint32_t save_pos = disp_pos;
+	disp_pos = line*disp_pos_per_line;
+
+	disp_str("ctr:");
+	disp_int(g_ctrl_pushed);
+	disp_str(" ");
+
+	disp_str("shift:");
+	disp_int(g_shift_pushed);
+	disp_str(" ");
+
+	disp_str("alt:");
+	disp_int(g_alt_pushed);
+	disp_str(" ");
+
+	disp_str("caps:");
+	disp_int(g_caps_enable);
+	disp_str(" ");
+
+	disp_str("num:");
+	disp_int(g_num_enable);
+	disp_str(" ");
+
+	disp_str("scroll:");
+	disp_int(g_scroll_enable);
+	disp_str(" ");
+	disp_pos = save_pos;
+}
 
 void keyboard_handler(uint32_t irq)
 {
@@ -314,11 +366,156 @@ void keyboard_handler(uint32_t irq)
 	}
 }
 
+void simple_one_scan_code_handle(uint8_t scan_code)
+{
+	/*
+	 * simple one scan code:
+	 * 		printable char: a-z 0-9 - = \ ` space ] ; , ' / [
+	 *		special key: tab caps lshift lctrl lalt rshift crlf esc
+	 *			f1-f12 scroll num backspace
+	 *		key pad:  - . 0-9 * +
+	 *
+	 */
+	bool_t make_flag = (scan_code&0x80) == 0 ? true : false;
+	uint8_t key = (scan_code & 0x7f);
+	switch (key)
+	{
+		case SCAN_CODE_BS:
+			{
+				if (false == make_flag)
+					break;
+				disp_pos -= 2;
+				if (disp_pos < 0)
+					disp_pos = 0;
+				disp_str(" ");
+				disp_pos -= 2;
+				if (disp_pos < 0)
+					disp_pos = 0;
+				break;
+			}
+		case SCAN_CODE_ESC:
+			{
+				if (false == make_flag)
+					break;
+				disp_str("esc");
+				break;
+			}
+		case SCAN_CODE_TAB:
+			{
+				if (false == make_flag)
+					break;
+				disp_str("    ");
+				break;
+			}
+		case SCAN_CODE_CRLF:
+			{
+				if (false == make_flag)
+					break;
+				disp_str("\n");
+				break;
+			}
+		case SCAN_CODE_L_CTRL:
+			{
+				g_ctrl_pushed = make_flag;
+				break;
+			}
+		case SCAN_CODE_L_SHIFT:
+		case SCAN_CODE_R_SHIFT:
+			{
+				g_shift_pushed = make_flag;
+				break;
+			}
+		case SCAN_CODE_L_ALT:
+			{
+				g_alt_pushed = make_flag;
+				break;
+			}
+		case SCAN_CODE_CAPS_LOCK:
+			{
+				if (false == make_flag)
+					break;
+				g_caps_enable = !g_caps_enable;
+				break;
+			}
+		case SCAN_CODE_F1:
+		case SCAN_CODE_F2:
+		case SCAN_CODE_F3:
+		case SCAN_CODE_F4:
+		case SCAN_CODE_F5:
+		case SCAN_CODE_F6:
+		case SCAN_CODE_F7:
+		case SCAN_CODE_F8:
+		case SCAN_CODE_F9:
+		case SCAN_CODE_F10:
+		case SCAN_CODE_F11:
+		case SCAN_CODE_F12:
+			{
+				if (false == make_flag)
+					break;
+				disp_str("f?");
+				break;
+			}
+		case SCAN_CODE_NUM_LOCK:
+			{
+				if (false == make_flag)
+					break;
+				g_num_enable = !g_num_enable;
+				break;
+			}
+		case SCAN_CODE_SCROLL_LOCK:
+			{
+				if (false == make_flag)
+					break;
+				g_scroll_enable = !g_scroll_enable;
+				break;
+			}
+		default:
+			{
+				if (false == make_flag)
+					break;
+				if (((KEY_PAD_START <= key) && (KEY_PAD_END >= key))
+					|| (SCAN_CODE_KP_MUL == key))
+				{
+					if (true == g_num_enable)
+						disp_str(g_scan_code_map[key]);
+					else
+						disp_str("num lock");
+				}
+				else
+				{
+					char ch = g_scan_code_map[key][0];
+					if ('a' <= ch && 'z' >= ch)
+					{
+						if (g_shift_pushed == g_caps_enable)
+							disp_str(g_scan_code_map[key]);
+						else
+							disp_str(g_scan_code_map_with_shift[key]);
+					}
+					else
+					{
+						if (false == g_shift_pushed)	
+							disp_str(g_scan_code_map[key]);
+						else
+							disp_str(g_scan_code_map_with_shift[key]);
+					}
+				}
+				break;
+			}
+	}
+}
+
 void keyboard_irq_init()
 {
+	g_ctrl_pushed = false;
+	g_shift_pushed = false;
+	g_alt_pushed = false;
+	g_caps_enable = false;
+	g_num_enable = false;
+	g_scroll_enable = false;
 	char_queue_init(&g_keyboard_buf);
 	set_irq_handler(1, keyboard_handler);
 	enable_irq(1);
+	key_state_display(PROTECT_DISPLAY_LINE_END);
 }
 
 void keyboard_read()
@@ -328,12 +525,45 @@ void keyboard_read()
 	if (0 != char_queue_count(&g_keyboard_buf))
 	{
 		scan_code = char_queue_pop(&g_keyboard_buf);
-		bool_t make_flag = (scan_code&0x80) == 0 ? 1 : 0;
 		//disp_hex(scan_code);
-		if (true == make_flag)
+		/* multiple scan code:
+		 * 		lgui {E0,5B} {E0,DB}
+		 * 		rctrl {E0,1D} {E0,9D}
+		 * 		rgui {E0,5C} {E0,DC}
+		 * 		ralt {E0,38} {E0,B8}
+		 * 		apps {E0,5D} {E0,DD}
+		 *		printscreen {E0,2A,E0,37} {E0,B7,E0,AA}
+		 *		key pad / {E0,35}
+		 *		key pad enter {E0,1C} {E0,9C}
+		 *		power {E0,5E} {E0,DE}
+		 *		sleep {E0,5F} {E0,DF}
+		 *		wake {E0,63} {E0,E3}
+		 *		pause {E1,1D,45,E1,9D,C5} {}
+		 *		insert {E0,52} {E0,D2}
+		 *		home {E0,47} {E0,C7}
+		 *		page up {E0,49} {E0,C9}
+		 *		delete {E0,53} {E0,D3}
+		 *		end {E0,4f} {E0,CF}
+		 *		page down {E0,51} {E0,D1}
+		 *		up {E0,48} {E0,C8}
+		 *		left {E0,4B} {E0,CB}
+		 *		down {E0,50} {E0,D0}
+		 *		right {E0,4D} {E0,CD}
+		 *
+		 */
+		if (0xE0 == scan_code)
 		{
-			disp_str(g_scan_code_map[scan_code]);
+			/* */
+		}
+		else if (0xE1 == scan_code)
+		{
+			/* */
+		}
+		else /* simple one scan code*/
+		{
+			simple_one_scan_code_handle(scan_code);	
 		}
 	}
+	key_state_display(PROTECT_DISPLAY_LINE_END);
 	enable_interrupt();
 }

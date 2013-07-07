@@ -24,16 +24,7 @@ tss_t g_tss;
 int g_k_reenter;
 
 /*******************************/
-void clear_some_lines()
-{
-    disp_pos = 0;
-    int i;
-    for (i = 0; i < 80 * 5; ++i)
-    {
-        disp_str(" ");
-    }
-    disp_pos = 0;
-}
+
 
 void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
 {
@@ -61,7 +52,10 @@ void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
         "Floating Point Exception"
     };
 
-    clear_some_lines(); 
+    clear_some_lines(0, PROTECT_DISPLAY_LINE_END); 
+	uint32_t save_pos = disp_pos;
+	
+	disp_pos = 0;
     disp_str("Exception: ");
     disp_str(err_msg[vec_no]);
     disp_str("\n");
@@ -74,16 +68,21 @@ void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
     disp_str(" Flags: ");
     disp_hex(eflags);
     disp_str("\n");
+	disp_pos = save_pos;
 
     return;
 }
 
 void mask_interrupt_handler(uint32_t irq)
 {
-    clear_some_lines();
+    clear_some_lines(0, PROTECT_DISPLAY_LINE_END);
+
+	uint32_t save_pos = disp_pos;
+	disp_pos = 0;
     disp_str("IRQ: ");
     disp_int(irq);
     disp_str("\n");
+	disp_pos = save_pos;
 }
 
 void clock_handler(uint32_t irq)

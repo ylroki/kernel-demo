@@ -117,6 +117,7 @@
 
 #define PROTECT_DISPLAY_LINE_END 5
 
+#define CLOCK_HZ 1000
 
 /*************************************************/
 
@@ -174,7 +175,7 @@ typedef struct tss_s{
 
 typedef void (*irq_handler)(uint32_t);
 typedef void (*int_handler)();
-typedef void (*syscall_handler)();
+typedef void* syscall_handler;
 
 
 /*****************************************************/
@@ -194,8 +195,10 @@ extern int g_test_val;
 extern tss_t g_tss;
 
 extern int g_k_reenter;/*irq reenter flag*/
+extern uint32_t g_ticks;
 
 /* interrupt request*/
+extern void clock_init();
 extern void clock_handler(uint32_t irq);
 
 extern void keyboard_handler(uint32_t irq);
@@ -248,5 +251,6 @@ extern void mask_int_func15();
 extern void syscall();
 extern void sys_test_inc();
 extern void sys_test_dec();
+extern uint32_t get_ticks();
 
 #endif

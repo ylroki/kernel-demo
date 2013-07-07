@@ -327,3 +327,9 @@ sys_test_dec:
 	mov eax, 1
 	int 0x80
 	ret
+
+global get_ticks
+get_ticks:
+	mov eax, 2
+	int 0x80
+	ret

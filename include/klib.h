@@ -18,6 +18,7 @@ extern void disp_hex(int number);
 extern void clear_some_lines(uint32_t start, uint32_t cnt);
 
 extern void delay(int time);
+extern void delay_loop(int time);
 
 extern uint32_t disp_pos;
 extern uint32_t disp_pos_per_line;

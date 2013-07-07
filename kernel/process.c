@@ -2,13 +2,13 @@
 
 /***********************************/
 /* global var*/
-void process_a();
+void process_keyboard();
 void process_b();
 void process_c();
 
 proc_t* g_proc_ready;
 proc_t g_proc_table[PROC_MAX];
-proc_func g_func_table[PROC_MAX] = {process_a, process_b, process_c};
+proc_func g_func_table[PROC_MAX] = {process_keyboard, process_b, process_c};
 
 char g_task_stack[STACK_SIZE*PROC_MAX];
 
@@ -46,10 +46,8 @@ void init_process_table()
 void run_first_process()
 {
 	g_k_reenter = 0;
-
-	/* actibe clock irq*/
-	set_irq_handler(0, clock_handler);
-	enable_irq(0);
+	
+	clock_init();
 
 	/* actibe keyboard irq*/
 	keyboard_irq_init();
@@ -68,12 +66,12 @@ void kernel_schedule()
 
 
 /**************************************/
-void process_a()
+void process_keyboard()
 {
     while (1)
     {
 		keyboard_read();
-		delay(1);
+		delay_loop(100);
     }
 }
 
@@ -81,7 +79,8 @@ void process_b()
 {
     while (1)
     {
-        delay(1);
+		disp_int(get_ticks());
+        delay(1000);
     }
 }
 

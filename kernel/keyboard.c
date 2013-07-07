@@ -328,7 +328,7 @@ uint8_t keyboard_buf_pop()
 {
 	while (0 == char_queue_count(&g_keyboard_buf))
 	{
-		delay(1);
+		delay_loop(1);
 	}
 	return char_queue_pop(&g_keyboard_buf);
 }

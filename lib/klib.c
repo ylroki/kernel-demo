@@ -90,13 +90,20 @@ void clear_some_lines(uint32_t start, uint32_t cnt)
     disp_pos = save_pos;
 }
 
-#define DELAY_LOOP 1000
 void delay(int time)
 {
-    int i, j;
-    for (i = 0; i < time; ++i)
-        for (j = 0; j < DELAY_LOOP; ++j)
-        {}
+    uint32_t t = get_ticks();
+	while (((get_ticks() - t)*1000/CLOCK_HZ) < time)
+	{}
+}
+
+#define DELAY_LOOP 1000
+void delay_loop(int time)
+{
+	int i,j;
+	for (i = 0; i < time; ++i)
+		for (j = 0; j < DELAY_LOOP; ++j)
+		{}
 }
 
 /******************************/

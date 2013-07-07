@@ -12,16 +12,19 @@ irq_handler g_irq_table[IRQ_MAX];
 
 void sys_test_inc_handler();
 void sys_test_dec_handler();
+uint32_t sys_get_ticks_handler();
 int g_test_val = 0;
 syscall_handler g_syscall_table[SYSCALL_MAX] = 
 {
 	sys_test_inc_handler,
-	sys_test_dec_handler
+	sys_test_dec_handler,
+	sys_get_ticks_handler
 };
 
 tss_t g_tss;
 
 int g_k_reenter;
+uint32_t g_ticks;
 
 /*******************************/
 
@@ -85,9 +88,25 @@ void mask_interrupt_handler(uint32_t irq)
 	disp_pos = save_pos;
 }
 
+void clock_init()
+{
+	g_ticks = 0;
+
+	/* init 8253 chip*/
+	out_byte(0x43, 0x34);/* 8253 mode control 0x34 = 00110100*/
+	uint32_t count = 1193182/CLOCK_HZ;/* set clock irq frequence 1000HZ*/
+	out_byte(0x40, (uint8_t)(count&0xff));
+	out_byte(0x40, (uint8_t)(count>>8));
+
+	/* actibe clock irq*/
+	set_irq_handler(0, clock_handler);
+	enable_irq(0);
+}
+
 void clock_handler(uint32_t irq)
 {
 	//disp_str("c");
+	++g_ticks;
 	if (g_k_reenter != 0)
 	{
 		return;
@@ -108,6 +127,11 @@ void sys_test_dec_handler()
 	int tmp = g_test_val;
 	--tmp;
 	g_test_val = tmp;
+}
+
+uint32_t sys_get_ticks_handler()
+{
+	return g_ticks;	
 }
 
 void init_8259A()

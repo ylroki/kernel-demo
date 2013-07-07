@@ -324,6 +324,15 @@ bool_t g_caps_enable = false;
 bool_t g_num_enable = false;
 bool_t g_scroll_enable = false;
 
+uint8_t keyboard_buf_pop()
+{
+	while (0 == char_queue_count(&g_keyboard_buf))
+	{
+		delay(1);
+	}
+	return char_queue_pop(&g_keyboard_buf);
+}
+
 void key_state_display(uint32_t line)
 {
 	uint32_t save_pos = disp_pos;
@@ -366,10 +375,24 @@ void keyboard_handler(uint32_t irq)
 	}
 }
 
-void simple_one_scan_code_handle(uint8_t scan_code)
+void keyboard_irq_init()
+{
+	g_ctrl_pushed = false;
+	g_shift_pushed = false;
+	g_alt_pushed = false;
+	g_caps_enable = false;
+	g_num_enable = false;
+	g_scroll_enable = false;
+	char_queue_init(&g_keyboard_buf);
+	set_irq_handler(1, keyboard_handler);
+	enable_irq(1);
+	key_state_display(PROTECT_DISPLAY_LINE_END);
+}
+
+void single_scan_code_handle(uint8_t scan_code)
 {
 	/*
-	 * simple one scan code:
+	 * single scan code:
 	 * 		printable char: a-z 0-9 - = \ ` space ] ; , ' / [
 	 *		special key: tab caps lshift lctrl lalt rshift crlf esc
 	 *			f1-f12 scroll num backspace
@@ -504,19 +527,51 @@ void simple_one_scan_code_handle(uint8_t scan_code)
 	}
 }
 
-void keyboard_irq_init()
+void E0_scan_code_handle(uint8_t scan_code)
 {
-	g_ctrl_pushed = false;
-	g_shift_pushed = false;
-	g_alt_pushed = false;
-	g_caps_enable = false;
-	g_num_enable = false;
-	g_scroll_enable = false;
-	char_queue_init(&g_keyboard_buf);
-	set_irq_handler(1, keyboard_handler);
-	enable_irq(1);
-	key_state_display(PROTECT_DISPLAY_LINE_END);
+	/* multiple scan code:
+	 *		key pad enter {E0,1C} {E0,9C}
+	 * 		rctrl {E0,1D} {E0,9D}
+	 *		key pad / {E0,35}
+	 * 		ralt {E0,38} {E0,B8}
+	 *		home {E0,47} {E0,C7}
+	 *		up {E0,48} {E0,C8}
+	 *		page up {E0,49} {E0,C9}
+	 *		left {E0,4B} {E0,CB}
+	 *		right {E0,4D} {E0,CD}
+	 *		end {E0,4F} {E0,CF}
+	 *		down {E0,50} {E0,D0}
+	 *		page down {E0,51} {E0,D1}
+	 *		insert {E0,52} {E0,D2}
+	 *		delete {E0,53} {E0,D3}
+	 * 		lgui {E0,5B} {E0,DB}
+	 * 		rgui {E0,5C} {E0,DC}
+	 * 		apps {E0,5D} {E0,DD}
+	 *		power {E0,5E} {E0,DE}
+	 *		sleep {E0,5F} {E0,DF}
+	 *		wake {E0,63} {E0,E3}
+	 *		printscreen {E0,2A,E0,37} {E0,B7,E0,AA}
+	 *		pause {E1,1D,45,E1,9D,C5} {}
+	 *
+	 */
+	switch (scan_code)
+	{
+		case 0x2A:
+		case 0xB7:
+			{
+				disp_hex(scan_code);
+				disp_hex(keyboard_buf_pop());
+				disp_hex(keyboard_buf_pop());
+				break;
+			}
+		default:
+			{
+				disp_hex(scan_code);
+				break;
+			}
+	}
 }
+
 
 void keyboard_read()
 {
@@ -526,42 +581,24 @@ void keyboard_read()
 	{
 		scan_code = char_queue_pop(&g_keyboard_buf);
 		//disp_hex(scan_code);
-		/* multiple scan code:
-		 * 		lgui {E0,5B} {E0,DB}
-		 * 		rctrl {E0,1D} {E0,9D}
-		 * 		rgui {E0,5C} {E0,DC}
-		 * 		ralt {E0,38} {E0,B8}
-		 * 		apps {E0,5D} {E0,DD}
-		 *		printscreen {E0,2A,E0,37} {E0,B7,E0,AA}
-		 *		key pad / {E0,35}
-		 *		key pad enter {E0,1C} {E0,9C}
-		 *		power {E0,5E} {E0,DE}
-		 *		sleep {E0,5F} {E0,DF}
-		 *		wake {E0,63} {E0,E3}
-		 *		pause {E1,1D,45,E1,9D,C5} {}
-		 *		insert {E0,52} {E0,D2}
-		 *		home {E0,47} {E0,C7}
-		 *		page up {E0,49} {E0,C9}
-		 *		delete {E0,53} {E0,D3}
-		 *		end {E0,4f} {E0,CF}
-		 *		page down {E0,51} {E0,D1}
-		 *		up {E0,48} {E0,C8}
-		 *		left {E0,4B} {E0,CB}
-		 *		down {E0,50} {E0,D0}
-		 *		right {E0,4D} {E0,CD}
-		 *
-		 */
+		
 		if (0xE0 == scan_code)
 		{
-			/* */
+			scan_code = keyboard_buf_pop();
+			E0_scan_code_handle(scan_code);
 		}
 		else if (0xE1 == scan_code)
 		{
 			/* */
+			disp_hex(keyboard_buf_pop());
+			disp_hex(keyboard_buf_pop());
+			disp_hex(keyboard_buf_pop());
+			disp_hex(keyboard_buf_pop());
+			disp_hex(keyboard_buf_pop());
 		}
 		else /* simple one scan code*/
 		{
-			simple_one_scan_code_handle(scan_code);	
+			single_scan_code_handle(scan_code);	
 		}
 	}
 	key_state_display(PROTECT_DISPLAY_LINE_END);

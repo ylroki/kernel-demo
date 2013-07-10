@@ -72,6 +72,7 @@ void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
     disp_hex(eflags);
     disp_str("\n");
 	disp_pos = save_pos;
+	while(1){}
 
     return;
 }

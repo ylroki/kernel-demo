@@ -117,7 +117,7 @@
 
 #define PROTECT_DISPLAY_LINE_END 5
 
-#define CLOCK_HZ 1000
+#define CLOCK_HZ 100
 
 /*************************************************/
 

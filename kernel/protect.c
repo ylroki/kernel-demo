@@ -99,15 +99,19 @@ void clock_init()
 	out_byte(0x40, (uint8_t)(count&0xff));
 	out_byte(0x40, (uint8_t)(count>>8));
 
-	/* actibe clock irq*/
+	/* active clock irq*/
 	set_irq_handler(0, clock_handler);
 	enable_irq(0);
 }
 
 void clock_handler(uint32_t irq)
 {
-	//disp_str("c");
 	++g_ticks;
+	uint32_t save_pos = disp_pos;
+	disp_pos = PROTECT_DISPLAY_LINE_END*disp_pos_per_line+120; 
+	disp_str("tick: ");
+	disp_int(g_ticks);
+	disp_pos = save_pos;
 	if (g_k_reenter != 0)
 	{
 		return;

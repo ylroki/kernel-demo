@@ -92,9 +92,11 @@ void clear_some_lines(uint32_t start, uint32_t cnt)
 
 void delay(int time)
 {
+	/*
     uint32_t t = get_ticks();
 	while (((get_ticks() - t)*1000/CLOCK_HZ) < time)
 	{}
+	*/
 }
 
 #define DELAY_LOOP 1000

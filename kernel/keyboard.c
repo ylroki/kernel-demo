@@ -554,14 +554,177 @@ void E0_scan_code_handle(uint8_t scan_code)
 	 *		pause {E1,1D,45,E1,9D,C5} {}
 	 *
 	 */
+	bool_t make_flag = (scan_code&0x80) == 0 ? true : false;
+	uint8_t key = (scan_code & 0x7f);
 	switch (scan_code)
 	{
 		case 0x2A:
 		case 0xB7:
 			{
+				/* print screen*/
 				disp_hex(scan_code);
 				disp_hex(keyboard_buf_pop());
 				disp_hex(keyboard_buf_pop());
+				break;
+			}
+		case 0x1C:
+		case 0x9C:
+			{
+				/* key pad enter {E0,1C} {E0,9C}*/
+				if (false == make_flag)
+					break;
+				disp_str("\n");
+				break;
+			}
+		case 0x1D:
+		case 0x9D:
+			{
+				/* rctrl {E0,1D} {E0,9D}*/
+				g_ctrl_pushed = make_flag;
+				break;
+			}
+		case 0x35:
+		case 0xB5:
+			{
+				/* key pad / {E0,35}*/
+				if (false == make_flag)
+					break;
+				disp_str("/");
+				break;
+			}
+		case 0x38:
+		case 0xB8:
+			{
+				/* ralt {E0,38} {E0,B8}*/
+				g_alt_pushed = make_flag;
+				break;
+			}
+		case 0x47:
+		case 0xC7:
+			{
+				/* home {E0,47} {E0,C7}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x48:
+		case 0xC8:
+			{
+				/* up {E0,48} {E0,C8}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x49:
+		case 0xC9:
+			{
+				/* page up {E0,49} {E0,C9}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x4B:
+		case 0xCB:
+			{
+				/* left {E0,4B} {E0,CB}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x4D:
+		case 0xCD:
+			{
+				/* right {E0,4D} {E0,CD}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x4F:
+		case 0xCF:
+			{
+				/* end {E0,4F} {E0,CF}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x50:
+		case 0xD0:
+			{
+				/* down {E0,50} {E0,D0}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x51:
+		case 0xD1:
+			{
+				/* page down {E0,51} {E0,D1}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x52:
+		case 0xD2:
+			{
+				/* insert {E0,52} {E0,D2}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x53:
+		case 0xD3:
+			{
+				/* delete {E0,53} {E0,D3}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x5B:
+		case 0xDB:
+			{
+				/* lgui {E0,5B} {E0,DB}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x5C:
+		case 0xDC:
+			{
+				/* rgui {E0,5C} {E0,DC}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x5D:
+		case 0xDD:
+			{
+				/* apps {E0,5D} {E0,DD}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x5E:
+		case 0xDE:
+			{
+				/* power {E0,5E} {E0,DE}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x5F:
+		case 0xDF:
+			{
+				/* sleep {E0,5F} {E0,DF}*/
+				if (false == make_flag)
+					break;
+				break;
+			}
+		case 0x63:
+		case 0xE3:
+			{
+				/* wake {E0,63} {E0,E3}*/
+				if (false == make_flag)
+					break;
 				break;
 			}
 		default:

@@ -79,8 +79,7 @@ void process_b()
 {
     while (1)
     {
-		disp_int(get_ticks());
-        delay(1000);
+        delay_loop(1);
     }
 }
 
@@ -88,6 +87,6 @@ void process_c()
 {
     while (1)
     {
-        delay(1);
+        delay_loop(1);
     }
 }

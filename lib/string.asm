@@ -96,7 +96,7 @@ disp_str:
     mov [gs:edi], ax
 	jmp .end
 
-.notfull
+.notfull:
     mov esi, [ebp + 8]; address of string
     ;mov edi, [disp_pos]
     mov ah, 0fh

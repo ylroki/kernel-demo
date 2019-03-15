@@ -3,10 +3,10 @@ ASM = nasm
 ASM_BOOT_FLAG = -I boot/include/
 ASM_KERNEL_FLAG = -I include/ -f elf
 
-CC = gcc
+CC = gcc -m32
 C_FLAG = -I include/ -c -fno-builtin -fno-stack-protector
 
-LD = ld
+LD = ld -m elf_i386 
 KERNEL_ENTRY = 0x30400
 LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 

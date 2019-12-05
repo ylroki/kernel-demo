@@ -4,3 +4,4 @@ obj
 *.bin
 *.txt
 tags
+tools/bochs-2.6.1/*

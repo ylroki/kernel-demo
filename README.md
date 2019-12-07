@@ -54,7 +54,7 @@ $ cd /mnt;sudo mkdir floppy;cd -
 ```
 
 # Creare image file
-Create image file "my_os.img"
+Create [fd] image file "my_os.img"
 ```
 $ cd image
 $ bximage

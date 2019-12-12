@@ -48,7 +48,7 @@ LABEL_DEAL_EACH_ITEM:
     jz LABEL_LOOP_NEXT
     dec dx
     mov cx, 11
-LABEL_CMP_FILENAME:
+LABEL_CMP_FILENAME:  ; Begin to compare filename
     cmp cx, 0
     jz LABEL_FILENAME_FOUND
     dec cx
@@ -59,10 +59,10 @@ LABEL_CMP_FILENAME:
     jmp LABEL_DIFF
 LABEL_GO_ON:
     inc di
-    jmp LABEL_CMP_FILENAME
-LABEL_DIFF:
+    jmp LABEL_CMP_FILENAME  ; Continue to compare next byte
+LABEL_DIFF: ; Filename wrong, Continue to read next dir entry(32 bytes)
     and di, 0ffe0h
-    add di, 20h
+    add di, 20h ; 32 bytes
     mov si, FileName
     jmp LABEL_DEAL_EACH_ITEM
 

@@ -1,1 +1,45 @@
-<mxfile host="www.draw.io" modified="2019-12-12T16:16:14.583Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36" etag="YvvAINojj8e1NZ33ZRKj" version="12.4.0" type="device" pages="1"><diagram id="AZzWcwaJORIgrx8qvPCg" name="Page-1">5Vhbb6s4EP41eTwRl5CQx+bWPVKPTrU50tl9qgw44I3ByDZJ6K/fMZhboE23W6TT3YdE+PMwM55vxmMzsdfx5Z6jNPrGAkwnlhFcJvZmYllL14B/BeQl4JgaCDkJSqgF7MkzLsFaLCMBFhorIckYlSTtgj5LEuzLDoY4Z+eu2IHRoAOkKMQdNxSw9xHFPbGfJJBRibrWosF/wySMKsvmfFnOxKgS1opFhAJ2bkH2dmKvOWOyfIova0xV7Lpx2b0wWzvGcSLf8sL3xf5IrZn/dT67z3Pr98V9/vOL1nJCNNMLjvMnJqYkDrXXMq9CccJcEojMA/IwfWSCSMISmPKYlCye2KtIxhTGJjxWsneUhEpGshRQpEc+uIw5AEJydsRrRhmMNglLwNTqQCitoIllG8Zqu7OUcIRS5Up8CVWqTdFzxvH0FMH6VikjSuX2BJqF9qEfoGq14By+tCAdsHvMYix5DiJ6duZqNnX2Wq5Tjs+tXND8Ru00MDSIdPqFteqGIXjQJP0DwqweYQ8MBZhPPZJ8EsZAGo9HmWM4U6dD2tzocTZbVDJt1pyxSLN7pB0xTzD9ZKQ9WSPStnR/MdJMp8dajyscQLPQQ8ZlxEKWILpt0BVnWRJgZceAUSPzwBRVRfT+wlLmuvOhTLIuxV3ugCjbXi53u3qm6ko2IBB+nv+hbRWDP9UAwqaHm0t7cpO3R4+YE4icSpgCfJFUwTLu41cipwMnEQ+xvN18VBBfTRGOKZLk1O3IQ3zrVx9VirY28Woz1qll205XRemofusqa2o33p9I/TzymB+JT1L4PovTrNQ2Uumbyy4/dUdt1b5pD3VZc6zaXwxQxuQn2q4F5LTM0ieJxHHE45Fp/2Kbtnt7z27xgURa3hkO5KL26OHI1wd3Y4isYU6v2LJX7mZnDrAV+qlV9FbxEXQsuqdVc+72C8kYKKTlYiQ6lgN0zClYXXnwEKqH3d0Ps0bBSD3RIw6iILv1dJOMmARB2YaxIM/IK1QZVUEUq3VWE2ejzIE6aL6i7MMfdhi92tpMq8eIM0CINdqhZt5j5EBZmuZoYt8Bbj7NZgCTWF2LwUBzGVwXZCCZKZdIIlQMgv8CR/WdrjoeWMseR4OXvPFI6refqkAisyqPrwmwUej6vm+VTyNQgWkFBIEyfFC9KSM0ULVWNzWDHYZpNzy1Oscsv7FkRZTN8nvLqdgiJc8SH0ygWO17iSfSlm3Qlb7oj8gCpj6UFFrBswHjaqgmd2WS/hszfqoWoxdOW3fmGmzfyT7GMsVYWVXxKr14h5Ksik/fo4GXb5bjzbNF1fRS5JMkVNw3ox/FneWLparzHBGJ94ArU2doZup6A1UH3qleGUFV46R3AfqAep2b3T21Pj62Tx3W0HHRHa1gh44d1wX7DR2xMg6/ikEjIHA8q1P/LUXsXTrCHr+WfDWZ4uNBTGMRMKEKrym0tyn7HyTX9V2xTqRWctnmUHK944sfDJvPv+Vts/mGbm//Bg==</diagram></mxfile>
+<mxfile host="www.draw.io" modified="2019-12-12T16:23:37.639Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36" etag="wQx6xZmf-1itPxMuBS7B" version="12.4.0" type="github" pages="1">
+  <diagram id="AZzWcwaJORIgrx8qvPCg" name="Page-1">
+    <mxGraphModel dx="980" dy="510" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-1" value="my_os.img" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.vhd;pointerEvents=1;" parent="1" vertex="1">
+          <mxGeometry x="489" y="285" width="80" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-2" value="Loader.bin" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.file;pointerEvents=1;" parent="1" vertex="1">
+          <mxGeometry x="505.5" y="60" width="47.5" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-3" value="kernel.bin" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.file_2;pointerEvents=1;" parent="1" vertex="1">
+          <mxGeometry x="598" y="60" width="47.5" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3399FF;strokeWidth=3;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="O7Skl24cI64Gyy2R7GyW-5" target="O7Skl24cI64Gyy2R7GyW-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="335" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-5" value="bochs" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.computer;pointerEvents=1;" parent="1" vertex="1">
+          <mxGeometry x="190" y="280" width="130" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-7" value="boot.bin" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.startup_task;pointerEvents=1;" parent="1" vertex="1">
+          <mxGeometry x="413" y="60" width="47.5" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-8" value="" style="html=1;aspect=fixed;strokeColor=none;shadow=0;align=center;verticalAlign=top;fillColor=#3B8DF1;shape=mxgraph.gcp2.files" parent="1" vertex="1">
+          <mxGeometry x="479" y="168" width="100" height="97" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-9" value="&lt;b&gt;FAT12&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];;autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="500" y="212" width="50" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-16" value="floppya: 1_44=image/my_os.img, status=inserted" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];;autosize=1;" parent="1" vertex="1">
+          <mxGeometry x="285" y="329" width="280" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-17" value="&lt;h1&gt;Install OS&lt;/h1&gt;&lt;p&gt;dd if=build/boot.bin of=image/my_os.img bs=512 count=1 conv=notrunc&amp;nbsp;&lt;/p&gt;&lt;p&gt;sudo mount image/my_os.img /mnt/floppy&amp;nbsp;&lt;/p&gt;&lt;p&gt;sudo cp build/loader.bin build/kernel.bin /mnt/floppy&amp;nbsp;&lt;/p&gt;&lt;p&gt;sleep 1 sudo&amp;nbsp;&lt;/p&gt;&lt;p&gt;umount /mnt/floppy&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="610" y="190" width="420" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="O7Skl24cI64Gyy2R7GyW-18" value="&lt;h1&gt;Make a floppy disk image&lt;/h1&gt;&lt;p&gt;bximage&lt;br&gt;&lt;/p&gt;&lt;p&gt;mkfs.msdos my_os.img&lt;br&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="400" y="420" width="310" height="100" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

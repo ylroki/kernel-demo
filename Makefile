@@ -3,7 +3,7 @@ ASM = nasm
 ASM_BOOT_FLAG = -I boot/include/
 ASM_KERNEL_FLAG = -I include/ -f elf
 
-CC = gcc -m32
+CC = gcc -m32 -w
 C_FLAG = -I include/ -c -fno-builtin -fno-stack-protector
 
 LD = ld -m elf_i386 
@@ -11,7 +11,7 @@ KERNEL_ENTRY = 0x30400
 LD_FLAG = -s -Ttext ${KERNEL_ENTRY}
 
 OBJS = obj/kernel.o obj/string.o obj/protect.o obj/kliba.o obj/klib.o\
-	obj/process.o obj/main.o obj/keyboard.o
+	obj/process.o obj/main.o #obj/keyboard.o
 
 DOCBOOK_XSL = /usr/share/xml/docbook/stylesheet/nwalsh/html/docbook.xsl
 
@@ -61,8 +61,8 @@ obj/process.o: kernel/process.c
 obj/main.o: kernel/main.c
 	${CC} ${C_FLAG} -o $@ $<
 
-obj/keyboard.o: kernel/keyboard.c
-	${CC} ${C_FLAG} -o $@ $<
+#obj/keyboard.o: kernel/keyboard.c
+	#${CC} ${C_FLAG} -o $@ $<
 
 build/kernel.bin: ${OBJS}
 	${LD} ${LD_FLAG} -o $@ ${OBJS}

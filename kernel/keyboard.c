@@ -335,12 +335,11 @@ uint8_t keyboard_buf_pop()
 
 void key_state_display(uint32_t line)
 {
-	uint32_t save_pos = disp_pos;
-	disp_pos = line*disp_pos_per_line;
+	uint32_t disp_pos = line*disp_pos_per_line;
 
-	disp_str("ctr:");
-	disp_int(g_ctrl_pushed);
-	disp_str(" ");
+	disp_pos = disp_str("ctr:", disp_pos);
+	disp_pos = disp_int(g_ctrl_pushed, disp_pos);
+	disp_pos = disp_str(" ", disp_pos);
 
 	disp_str("shift:");
 	disp_int(g_shift_pushed);
@@ -362,6 +361,7 @@ void key_state_display(uint32_t line)
 	disp_int(g_scroll_enable);
 	disp_str(" ");
 	disp_pos = save_pos;
+	*/
 }
 
 void keyboard_handler(uint32_t irq)

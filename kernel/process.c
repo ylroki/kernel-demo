@@ -50,7 +50,7 @@ void run_first_process()
 	clock_init();
 
 	/* actibe keyboard irq*/
-	keyboard_irq_init();
+	//keyboard_irq_init();
 	
 	init_process_table();
 
@@ -70,7 +70,7 @@ void process_keyboard()
 {
     while (1)
     {
-		keyboard_read();
+		//keyboard_read();
 		delay_loop(100);
     }
 }
@@ -79,6 +79,8 @@ void process_b()
 {
     while (1)
     {
+        disp_str("process b", 10 * disp_pos_per_line);
+        disp_int(get_ticks(), 10 * disp_pos_per_line + 20);
         delay_loop(1);
     }
 }
@@ -87,6 +89,8 @@ void process_c()
 {
     while (1)
     {
+        disp_str("process c", 11 * disp_pos_per_line);
+        disp_int(get_ticks(), 11 * disp_pos_per_line + 20);
         delay_loop(1);
     }
 }

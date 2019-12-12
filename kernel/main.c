@@ -3,10 +3,7 @@
 
 int kernel_main()
 {
-	clear_some_lines(PROTECT_DISPLAY_LINE_END, 
-			disp_line_limit-PROTECT_DISPLAY_LINE_END);
-	disp_pos = PROTECT_DISPLAY_LINE_END*disp_pos_per_line;
-    disp_str("\n------\"kernel main begin\"------\n");
+    disp_str("kernel process 0", 1 * disp_pos_per_line);
 
 	g_test_val = 0;
 

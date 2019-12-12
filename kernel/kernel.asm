@@ -72,7 +72,7 @@ _start:
     sgdt [g_gdt_ptr]
 
     ; prepare new GDT
-    ; prepare protect mod
+    ; prepare protect mode
     call kernel_init
 
     ; load gdt and idt(interrupt descriptor table)

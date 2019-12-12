@@ -67,15 +67,15 @@ memset:
 
 
 ;--------------------------
-; Function void disp_str(char*);
+; Function int disp_str(char*, int);
 ;--------------------------
 global disp_str
-global disp_pos
+;global disp_pos
 global disp_char_per_line
 global disp_pos_per_line
 global disp_line_limit
 
-disp_pos dd 0
+;disp_pos dd 0
 disp_char_per_line dd 80
 disp_pos_per_line dd 160
 disp_line_limit dd 25
@@ -87,7 +87,7 @@ disp_str:
     push esi
     push edi
 
-    mov edi, [disp_pos]
+    mov edi, [ebp + 12] ; pos
 	cmp edi, 4000
 	jb .notfull
 	mov edi, 3996
@@ -125,7 +125,8 @@ disp_str:
     jmp .begin
 
 .end:
-    mov [disp_pos], edi
+    ;mov [disp_pos], edi
+    mov eax, edi
 
     pop edi
     pop esi

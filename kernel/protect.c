@@ -56,22 +56,20 @@ void exception_handler(int vec_no, int err_code, int eip, int cs, int eflags)
     };
 
     clear_some_lines(0, PROTECT_DISPLAY_LINE_END); 
-	uint32_t save_pos = disp_pos;
+	uint32_t pos = 0;
 	
-	disp_pos = 0;
-    disp_str("Exception: ");
-    disp_str(err_msg[vec_no]);
-    disp_str("\n");
-    disp_str("CS: ");
-    disp_hex(cs);
-    disp_str(" IP: ");
-    disp_hex(eip);
-    disp_str(" Error code: ");
-    disp_hex(err_code);
-    disp_str(" Flags: ");
-    disp_hex(eflags);
-    disp_str("\n");
-	disp_pos = save_pos;
+    pos = disp_str("Exception: ", pos);
+    pos = disp_str(err_msg[vec_no], pos);
+    pos = disp_str("\n", pos);
+    pos = disp_str("CS: ", pos);
+    pos = disp_hex(cs, pos);
+    pos = disp_str(" IP: ", pos);
+    pos = disp_hex(eip, pos);
+    pos = disp_str(" Error code: ", pos);
+    pos = disp_hex(err_code, pos);
+    pos = disp_str(" Flags: ", pos);
+    pos = disp_hex(eflags, pos);
+    pos = disp_str("\n", pos);
 	while(1){}
 
     return;
@@ -81,16 +79,15 @@ void mask_interrupt_handler(uint32_t irq)
 {
     clear_some_lines(0, PROTECT_DISPLAY_LINE_END);
 
-	uint32_t save_pos = disp_pos;
-	disp_pos = 0;
-    disp_str("IRQ: ");
-    disp_int(irq);
-    disp_str("\n");
-	disp_pos = save_pos;
+	uint32_t pos = 0;
+    pos = disp_str("IRQ: ", pos);
+    pos = disp_int(irq, pos);
+    pos = disp_str("\n", pos);
 }
 
 void clock_init()
 {
+        disp_str("init clock", 2 * disp_pos_per_line);
 	g_ticks = 0;
 
 	/* init 8253 chip*/
@@ -107,11 +104,9 @@ void clock_init()
 void clock_handler(uint32_t irq)
 {
 	++g_ticks;
-	uint32_t save_pos = disp_pos;
-	disp_pos = PROTECT_DISPLAY_LINE_END*disp_pos_per_line+120; 
-	disp_str("tick: ");
-	disp_int(g_ticks);
-	disp_pos = save_pos;
+	uint32_t pos = PROTECT_DISPLAY_LINE_END*disp_pos_per_line+120; 
+	pos = disp_str("tick: ", pos);
+	pos = disp_int(g_ticks, pos);
 	if (g_k_reenter != 0)
 	{
 		return;
@@ -352,6 +347,9 @@ void init_protect_mode()
 
 void kernel_init()
 {
+    clear_some_lines(0, disp_line_limit);
+    disp_str("kernel enter protect mode", 0*disp_pos_per_line);
+
     uint16_t* p_gdt_limit = (uint16_t*)(&g_gdt_ptr[0]);
     uint32_t* p_gdt_base = (uint32_t*)(&g_gdt_ptr[2]);
     uint16_t* p_idt_limit = (uint16_t*)(&g_idt_ptr[0]);
@@ -370,8 +368,6 @@ void kernel_init()
     init_idt_desc(INT_VECTOR_SYSCALL, DA_386IGate,
             syscall, PRIVILEGE_USER);
 
-
-    disp_str("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nkernel init\n");
     return ;
 }
 

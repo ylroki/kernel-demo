@@ -60,34 +60,32 @@ char* itoa(char* buffer, int number, int base)
 	buffer[len] = 0;
 }
 
-void disp_int(int number)
+uint32_t disp_int(int number, uint32_t pos)
 {
     char str[16] = {0};
     (void)itoa(str, number, 10);
-    disp_str(str);
+    return disp_str(str, pos);
 }
 
-void disp_hex(int number)
+uint32_t disp_hex(int number, uint32_t pos)
 {
     char str[16] = {0};
     (void)itoa(str, number, 16);
-    disp_str(str);
+    return disp_str(str, pos);
 }
 
 void clear_some_lines(uint32_t start, uint32_t cnt)
 {
     int i = 0;
-	uint32_t save_pos = disp_pos;
 
 	if (disp_line_limit - start < cnt)
 		cnt = disp_line_limit - start;
 
-    disp_pos = start*disp_pos_per_line;
-    for (i = 0; i < disp_char_per_line * cnt; ++i)
+    uint32_t disp_pos = start*disp_pos_per_line;
+    for (i = disp_pos; i < disp_pos_per_line * cnt; i+=2)
     {
-        disp_str(" ");
+        disp_str(" ", i);
     }
-    disp_pos = save_pos;
 }
 
 void delay(int time)

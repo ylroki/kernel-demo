@@ -81,8 +81,8 @@ void clear_some_lines(uint32_t start, uint32_t cnt)
 	if (disp_line_limit - start < cnt)
 		cnt = disp_line_limit - start;
 
-    uint32_t disp_pos = start*disp_pos_per_line;
-    for (i = disp_pos; i < disp_pos_per_line * cnt; i+=2)
+    uint32_t pos = start*disp_pos_per_line;
+    for (i = pos; i < disp_pos_per_line * cnt; i+=2)
     {
         disp_str(" ", i);
     }

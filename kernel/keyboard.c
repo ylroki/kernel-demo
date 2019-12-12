@@ -323,6 +323,7 @@ bool_t g_alt_pushed = false;
 bool_t g_caps_enable = false;
 bool_t g_num_enable = false;
 bool_t g_scroll_enable = false;
+uint32_t g_pos = 10*160;
 
 uint8_t keyboard_buf_pop()
 {
@@ -335,33 +336,31 @@ uint8_t keyboard_buf_pop()
 
 void key_state_display(uint32_t line)
 {
-	uint32_t disp_pos = line*disp_pos_per_line;
+	uint32_t pos = line*disp_pos_per_line;
 
-	disp_pos = disp_str("ctr:", disp_pos);
-	disp_pos = disp_int(g_ctrl_pushed, disp_pos);
-	disp_pos = disp_str(" ", disp_pos);
+	pos = disp_str("ctr:", pos);
+	pos = disp_int(g_ctrl_pushed, pos);
+	pos = disp_str(" ", pos);
 
-	disp_str("shift:");
-	disp_int(g_shift_pushed);
-	disp_str(" ");
+	pos = disp_str("shift:", pos);
+	pos = disp_int(g_shift_pushed, pos);
+	pos = disp_str(" ", pos);
 
-	disp_str("alt:");
-	disp_int(g_alt_pushed);
-	disp_str(" ");
+	pos = disp_str("alt:", pos);
+	pos = disp_int(g_alt_pushed, pos);
+	pos = disp_str(" ", pos);
 
-	disp_str("caps:");
-	disp_int(g_caps_enable);
-	disp_str(" ");
+	pos = disp_str("caps:", pos);
+	pos = disp_int(g_caps_enable, pos);
+	pos = disp_str(" ", pos);
 
-	disp_str("num:");
-	disp_int(g_num_enable);
-	disp_str(" ");
+	pos = disp_str("num:", pos);
+	pos = disp_int(g_num_enable, pos);
+	pos = disp_str(" ", pos);
 
-	disp_str("scroll:");
-	disp_int(g_scroll_enable);
-	disp_str(" ");
-	disp_pos = save_pos;
-	*/
+	pos = disp_str("scroll:", pos);
+	pos = disp_int(g_scroll_enable, pos);
+	pos = disp_str(" ", pos);
 }
 
 void keyboard_handler(uint32_t irq)
@@ -377,6 +376,7 @@ void keyboard_handler(uint32_t irq)
 
 void keyboard_irq_init()
 {
+	disp_str("init keyboard", 3 * disp_pos_per_line);
 	g_ctrl_pushed = false;
 	g_shift_pushed = false;
 	g_alt_pushed = false;
@@ -386,7 +386,7 @@ void keyboard_irq_init()
 	char_queue_init(&g_keyboard_buf);
 	set_irq_handler(1, keyboard_handler);
 	enable_irq(1);
-	key_state_display(PROTECT_DISPLAY_LINE_END);
+	key_state_display(4);
 }
 
 void single_scan_code_handle(uint8_t scan_code)
@@ -407,34 +407,34 @@ void single_scan_code_handle(uint8_t scan_code)
 			{
 				if (false == make_flag)
 					break;
-				disp_pos -= 2;
-				if (disp_pos < 0)
-					disp_pos = 0;
-				disp_str(" ");
-				disp_pos -= 2;
-				if (disp_pos < 0)
-					disp_pos = 0;
+				g_pos -= 2;
+				if (g_pos < 0)
+					g_pos = 0;
+				g_pos = disp_str(" ", g_pos);
+				g_pos -= 2;
+				if (g_pos < 0)
+					g_pos = 0;
 				break;
 			}
 		case SCAN_CODE_ESC:
 			{
 				if (false == make_flag)
 					break;
-				disp_str("esc");
+				g_pos = disp_str("esc", g_pos);
 				break;
 			}
 		case SCAN_CODE_TAB:
 			{
 				if (false == make_flag)
 					break;
-				disp_str("    ");
+				g_pos = disp_str("    ", g_pos);
 				break;
 			}
 		case SCAN_CODE_CRLF:
 			{
 				if (false == make_flag)
 					break;
-				disp_str("\n");
+				g_pos = disp_str("\n", g_pos);
 				break;
 			}
 		case SCAN_CODE_L_CTRL:
@@ -475,7 +475,7 @@ void single_scan_code_handle(uint8_t scan_code)
 			{
 				if (false == make_flag)
 					break;
-				disp_str("f?");
+				g_pos = disp_str("f?", g_pos);
 				break;
 			}
 		case SCAN_CODE_NUM_LOCK:
@@ -500,9 +500,9 @@ void single_scan_code_handle(uint8_t scan_code)
 					|| (SCAN_CODE_KP_MUL == key))
 				{
 					if (true == g_num_enable)
-						disp_str(g_scan_code_map[key]);
+						g_pos = disp_str(g_scan_code_map[key], g_pos);
 					else
-						disp_str("num lock");
+						g_pos = disp_str("num lock", g_pos);
 				}
 				else
 				{
@@ -510,16 +510,16 @@ void single_scan_code_handle(uint8_t scan_code)
 					if ('a' <= ch && 'z' >= ch)
 					{
 						if (g_shift_pushed == g_caps_enable)
-							disp_str(g_scan_code_map[key]);
+							g_pos = disp_str(g_scan_code_map[key], g_pos);
 						else
-							disp_str(g_scan_code_map_with_shift[key]);
+							g_pos = disp_str(g_scan_code_map_with_shift[key], g_pos);
 					}
 					else
 					{
 						if (false == g_shift_pushed)	
-							disp_str(g_scan_code_map[key]);
+							g_pos = disp_str(g_scan_code_map[key], g_pos);
 						else
-							disp_str(g_scan_code_map_with_shift[key]);
+							g_pos = disp_str(g_scan_code_map_with_shift[key], g_pos);
 					}
 				}
 				break;
@@ -562,9 +562,9 @@ void E0_scan_code_handle(uint8_t scan_code)
 		case 0xB7:
 			{
 				/* print screen*/
-				disp_hex(scan_code);
-				disp_hex(keyboard_buf_pop());
-				disp_hex(keyboard_buf_pop());
+				g_pos = disp_hex(scan_code, g_pos);
+				g_pos = disp_hex(keyboard_buf_pop(), g_pos);
+				g_pos = disp_hex(keyboard_buf_pop(), g_pos);
 				break;
 			}
 		case 0x1C:
@@ -573,7 +573,7 @@ void E0_scan_code_handle(uint8_t scan_code)
 				/* key pad enter {E0,1C} {E0,9C}*/
 				if (false == make_flag)
 					break;
-				disp_str("\n");
+				g_pos = disp_str("\n", g_pos);
 				break;
 			}
 		case 0x1D:
@@ -589,7 +589,7 @@ void E0_scan_code_handle(uint8_t scan_code)
 				/* key pad / {E0,35}*/
 				if (false == make_flag)
 					break;
-				disp_str("/");
+				g_pos = disp_str("/", g_pos);
 				break;
 			}
 		case 0x38:
@@ -729,7 +729,7 @@ void E0_scan_code_handle(uint8_t scan_code)
 			}
 		default:
 			{
-				disp_hex(scan_code);
+				g_pos = disp_hex(scan_code, g_pos);
 				break;
 			}
 	}
@@ -739,11 +739,10 @@ void E0_scan_code_handle(uint8_t scan_code)
 void keyboard_read()
 {
 	uint8_t scan_code = 0;
-	disable_interrupt();
+	//disable_interrupt();
 	if (0 != char_queue_count(&g_keyboard_buf))
 	{
 		scan_code = char_queue_pop(&g_keyboard_buf);
-		//disp_hex(scan_code);
 		
 		if (0xE0 == scan_code)
 		{
@@ -753,17 +752,16 @@ void keyboard_read()
 		else if (0xE1 == scan_code)
 		{
 			/* */
-			disp_hex(keyboard_buf_pop());
-			disp_hex(keyboard_buf_pop());
-			disp_hex(keyboard_buf_pop());
-			disp_hex(keyboard_buf_pop());
-			disp_hex(keyboard_buf_pop());
+			for (int i=0; i<5; ++i)
+			{
+				g_pos = disp_hex(keyboard_buf_pop(), g_pos);
+			}
 		}
 		else /* simple one scan code*/
 		{
 			single_scan_code_handle(scan_code);	
 		}
 	}
-	key_state_display(PROTECT_DISPLAY_LINE_END);
-	enable_interrupt();
+	key_state_display(4);
+	//enable_interrupt();
 }

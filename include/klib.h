@@ -20,7 +20,6 @@ extern void clear_some_lines(uint32_t start, uint32_t cnt);
 extern void delay(int time);
 extern void delay_loop(int time);
 
-//extern uint32_t disp_pos;
 extern uint32_t disp_pos_per_line;
 extern uint32_t disp_line_limit;
 extern uint32_t disp_char_per_line;

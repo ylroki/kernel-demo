@@ -159,7 +159,7 @@ LABEL_LOADED:
 
     mov eax, cr0
     or eax, 1
-    mov cr0, eax
+    mov cr0, eax ; PE flag of cr0 set, enabe segment protection
 
     jmp dword SelectorFlatC:(BaseOfLoaderPhyAddr+LABEL_PM_START)
 

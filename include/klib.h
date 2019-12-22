@@ -26,6 +26,7 @@ extern uint32_t disp_char_per_line;
 
 extern void* memcpy(void* dst, void* src, int size);
 extern uint32_t disp_str(char* str, uint32_t pos);
+extern char* g_string_tab[10];
 
 
 #endif

@@ -40,7 +40,7 @@ void init_process_table()
         p_proc->regs.eflags = 0x1202;   /* IF=1, IOPL=1, bit 2 is always 1.*/
     }
 
-    g_proc_ready = g_proc_table;
+    g_proc_ready = g_proc_table+1;
 
 }
 
@@ -51,7 +51,7 @@ void run_first_process()
 	clock_init();
 
 	/* actibe keyboard irq*/
-	keyboard_irq_init();
+	//keyboard_irq_init();
 	
 	init_process_table();
 
@@ -62,16 +62,20 @@ void kernel_schedule()
 {
     ++g_proc_ready;
     if (g_proc_ready >= g_proc_table + PROC_MAX)
-        g_proc_ready = g_proc_table;
+        g_proc_ready = g_proc_table+1;
 }
 
 
 /**************************************/
 void process_keyboard()
 {
+    int tick=0;
     while (1)
     {
 		//keyboard_read();
+        disp_str("process a", 7 * disp_pos_per_line);
+        disp_str(g_string_tab[g_ticks%10], 7 * disp_pos_per_line + 20);
+        //disp_int(tick++, 7 * disp_pos_per_line + 20);
 		delay_loop(1);
     }
 }
@@ -81,7 +85,8 @@ void process_b()
     while (1)
     {
         disp_str("process b", 8 * disp_pos_per_line);
-        disp_int(get_ticks(), 9 * disp_pos_per_line + 20);
+        //disp_str(g_string_tab[g_ticks%10], 8 * disp_pos_per_line + 20);
+        disp_int(g_ticks, 8 * disp_pos_per_line + 20);
         delay_loop(1);
     }
 }
@@ -91,7 +96,9 @@ void process_c()
     while (1)
     {
         disp_str("process c", 9 * disp_pos_per_line);
-        disp_int(get_ticks(), 9 * disp_pos_per_line + 20);
+        //disp_str(g_string_tab[g_ticks%10], 9 * disp_pos_per_line + 20);
+        disp_int(g_ticks, 9 * disp_pos_per_line + 20);
+
         delay_loop(1);
     }
 }

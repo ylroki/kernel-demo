@@ -109,7 +109,7 @@ void delay_loop(int time)
 /******************************/
 void char_queue_init(char_queue_t* q)
 {
-	memset(q->buf, 0, sizeof(q->buf));
+	//memset(q->buf, 0, sizeof(q->buf));
 	q->head = 0;
 	q->tail = 0;
 }

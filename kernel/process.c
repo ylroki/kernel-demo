@@ -36,7 +36,7 @@ void init_process_table()
         p_proc->regs.ss = (8 & SA_RPL_MASK & SA_TI_MASK) | SA_TIL | RPL_TASK;
         p_proc->regs.gs = (SELECTOR_KERNEL_GS & SA_RPL_MASK) | RPL_TASK;
         p_proc->regs.eip= (uint32_t)g_func_table[idx];
-        p_proc->regs.esp= (uint32_t) g_task_stack + STACK_SIZE * idx;
+        p_proc->regs.esp= (uint32_t) g_task_stack + STACK_SIZE * (idx+1);
         p_proc->regs.eflags = 0x1202;   /* IF=1, IOPL=1, bit 2 is always 1.*/
     }
 
@@ -51,7 +51,7 @@ void run_first_process()
 	clock_init();
 
 	/* actibe keyboard irq*/
-	//keyboard_irq_init();
+	keyboard_irq_init();
 	
 	init_process_table();
 
@@ -62,7 +62,7 @@ void kernel_schedule()
 {
     ++g_proc_ready;
     if (g_proc_ready >= g_proc_table + PROC_MAX)
-        g_proc_ready = g_proc_table+1;
+        g_proc_ready = g_proc_table;
 }
 
 
@@ -72,10 +72,10 @@ void process_keyboard()
     int tick=0;
     while (1)
     {
-		//keyboard_read();
+		keyboard_read();
         disp_str("process a", 7 * disp_pos_per_line);
-        disp_str(g_string_tab[g_ticks%10], 7 * disp_pos_per_line + 20);
-        //disp_int(tick++, 7 * disp_pos_per_line + 20);
+        //disp_str(g_string_tab[g_ticks%10], 7 * disp_pos_per_line + 20);
+        disp_int(g_ticks, 7 * disp_pos_per_line + 20);
 		delay_loop(1);
     }
 }

@@ -8,7 +8,7 @@ int kernel_main()
 	g_test_val = 0;
 
 	run_first_process();
-	/* I don't know how to powoff...*/
+	/* I don't know how to poweroff...*/
     while(1){}
 }
 
